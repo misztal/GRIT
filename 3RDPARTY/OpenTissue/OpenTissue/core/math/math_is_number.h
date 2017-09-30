@@ -22,11 +22,11 @@ namespace OpenTissue
 
 #ifdef WIN32
 #define is_number(val) (_isnan(val)==0)   ///< Is a number test
-#else 
+#else
 #if (__APPLE__)
 #define is_number(val) (std::isnan(val)==0)   ///< Is a number test
 #else
-#define is_number(val) (isnan(val)==0)   ///< Is a number test
+#define is_number(val) (std::isnan(val)==0)   ///< Is a number test
 #endif
 #endif
 
