@@ -1,0 +1,20 @@
+#ifndef UTIL_GET_DATA_FILE_PATH_H
+#define UTIL_GET_DATA_FILE_PATH_H
+
+#include <string>
+
+namespace util
+{
+
+  std::string const data_path = "@PROJECT_SOURCE_DIR@/bin/data/";
+
+  inline std::string get_data_file_path(std::string const & file)
+  {
+    return data_path + file;
+  }
+
+}
+
+//UTIL_GET_DATA_FILE_PATH_H
+#endif
+

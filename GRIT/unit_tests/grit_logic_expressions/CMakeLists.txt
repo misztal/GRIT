@@ -1,0 +1,38 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}/UTIL/include
+  ${OpenTissue_INCLUDE_DIRS}
+  ${PROJECT_SOURCE_DIR}/GRIT/include
+  ${PROJECT_SOURCE_DIR}/GLUE/include
+  ${Boost_INCLUDE_DIRS}
+  )
+
+ADD_EXECUTABLE(
+  unit_grit_logic_expressions
+  grit_logic_expressions.cpp
+  )
+
+TARGET_LINK_LIBRARIES(
+  unit_grit_logic_expressions
+  util
+  grit
+  glue
+  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+  )
+
+IF(CMAKE_GENERATOR MATCHES Xcode)
+  SET_TARGET_PROPERTIES(unit_grit_logic_expressions PROPERTIES XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS "/Library/Frameworks")
+  SET_TARGET_PROPERTIES(unit_grit_logic_expressions PROPERTIES XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wall")
+ENDIF(CMAKE_GENERATOR MATCHES Xcode)
+
+SET_TARGET_PROPERTIES(unit_grit_logic_expressions PROPERTIES DEBUG_POSTFIX "D" )
+SET_TARGET_PROPERTIES(unit_grit_logic_expressions PROPERTIES RUNTIME_OUTPUT_DIRECTORY                "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_grit_logic_expressions PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG          "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_grit_logic_expressions PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE        "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_grit_logic_expressions PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL     "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_grit_logic_expressions PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${PROJECT_SOURCE_DIR}/bin/")
+
+ADD_TEST(
+  NAME               unit_grit_logic_expressions
+  COMMAND            unit_grit_logic_expressions
+  WORKING_DIRECTORY  "${PROJECT_SOURCE_DIR}/bin/"
+  )

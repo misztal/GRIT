@@ -1,0 +1,37 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}/UTIL/include
+  ${PROJECT_SOURCE_DIR}/GLUE/include
+  ${PROJECT_SOURCE_DIR}/GRIT/include
+  ${Boost_INCLUDE_DIRS}
+  )
+
+ADD_EXECUTABLE(
+  unit_glue_compute_neighbors
+  glue_compute_neighbors.cpp
+  )
+
+TARGET_LINK_LIBRARIES(
+  unit_glue_compute_neighbors
+  util
+  grit
+  glue
+  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+  )
+
+IF(CMAKE_GENERATOR MATCHES Xcode)
+  SET_TARGET_PROPERTIES(unit_glue_compute_neighbors PROPERTIES XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS "/Library/Frameworks")
+  SET_TARGET_PROPERTIES(unit_glue_compute_neighbors PROPERTIES XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wall")
+ENDIF(CMAKE_GENERATOR MATCHES Xcode)
+
+SET_TARGET_PROPERTIES(unit_glue_compute_neighbors PROPERTIES DEBUG_POSTFIX "D" )
+SET_TARGET_PROPERTIES(unit_glue_compute_neighbors PROPERTIES RUNTIME_OUTPUT_DIRECTORY                "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_glue_compute_neighbors PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG          "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_glue_compute_neighbors PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE        "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_glue_compute_neighbors PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL     "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_glue_compute_neighbors PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${PROJECT_SOURCE_DIR}/bin/")
+
+ADD_TEST(
+  NAME               unit_glue_compute_neighbors
+  COMMAND            unit_glue_compute_neighbors
+  WORKING_DIRECTORY  "${PROJECT_SOURCE_DIR}/bin/"
+  )

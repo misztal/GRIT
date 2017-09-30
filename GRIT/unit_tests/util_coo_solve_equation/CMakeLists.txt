@@ -1,0 +1,32 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}/UTIL/include
+  ${Boost_INCLUDE_DIRS}
+  )
+
+ADD_EXECUTABLE(
+  unit_util_coo_solve_equation
+  util_coo_solve_equation.cpp
+  )
+
+TARGET_LINK_LIBRARIES(
+  unit_util_coo_solve_equation
+  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+  )
+
+IF(CMAKE_GENERATOR MATCHES Xcode)
+  SET_TARGET_PROPERTIES(unit_util_coo_solve_equation PROPERTIES XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS "/Library/Frameworks")
+  SET_TARGET_PROPERTIES(unit_util_coo_solve_equation PROPERTIES XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wall")
+ENDIF(CMAKE_GENERATOR MATCHES Xcode)
+
+SET_TARGET_PROPERTIES(unit_util_coo_solve_equation PROPERTIES DEBUG_POSTFIX "D" )
+SET_TARGET_PROPERTIES(unit_util_coo_solve_equation PROPERTIES RUNTIME_OUTPUT_DIRECTORY                "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_util_coo_solve_equation PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG          "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_util_coo_solve_equation PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE        "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_util_coo_solve_equation PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL     "${PROJECT_SOURCE_DIR}/bin/")
+SET_TARGET_PROPERTIES(unit_util_coo_solve_equation PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${PROJECT_SOURCE_DIR}/bin/")
+
+ADD_TEST(
+  NAME               unit_util_coo_solve_equation
+  COMMAND            unit_util_coo_solve_equation
+  WORKING_DIRECTORY  "${PROJECT_SOURCE_DIR}/bin/"
+  )

@@ -1,0 +1,78 @@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage[ruled, linesnumbered]{algorithm2e} % ,oldcommands]{algorithm2e} % 2013-05-15 Michael: For algorithms. 2013-05-24 Michael: I can't compile with options oldcommand.
+\usepackage[ruled, linesnumbered, oldcommands]{algorithm2e}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{amsmath}
+% \usepackage{cleveref}
+\usepackage{amsfonts}
+\usepackage{color}
+% \usepackage{algorithmic}
+\usepackage[numbered,framed]{mcode}
+\usepackage{multirow}
+\usepackage{charter}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\usepackage{todonotes}
+\usepackage{morefloats}  % Get rid of LaTex too many unprocessed floats problem
+
+\def\registered{\textsuperscript{\textregistered}}
+\def\copyright{\textsuperscript{\textcopyright}}
+\def\trademark{\textsuperscript{\texttrademark}}
+
+\definecolor{kennycolor}{rgb}{0.7,0.1,0.1}
+\newcommand{\kenny}[1]{  { \color{kennycolor} Kenny says: #1}    }
+\definecolor{michaelcolor}{rgb}{0.1,0.1,0.7}
+\newcommand{\michael}[1]{  { \color{michaelcolor} Michael says: #1}    }
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}{Definition}[section]
+% \newtheorem{algorithm}{Algorithm}[section]
+
+\newenvironment{proof}[1][Proof]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{example}[1][Example]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{remark}[1][Remark]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{exercise}[1][Exercise]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{answer}[1][Answer]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\newcommand{\qed}{\nobreak \ifvmode \relax \else
+      \ifdim\lastskip<1.5em \hskip-\lastskip
+      \hskip1.5em plus0em minus0.5em \fi \nobreak
+      \vrule height0.75em width0.5em depth0.25em\fi}
+
+\renewcommand{\vec}[1]{ \ensuremath{\mathbf{#1} } }
+\newcommand{\abs}[1]{\left| {#1} \right|}
+\newcommand{\quat}[1]{ #1 }
+\newcommand{\mat}[1]{\ensuremath{\mathbf{#1} }}
+\newcommand{\norm}[1]{\parallel {#1} \parallel}
+\newcommand{\N}{ \mathbb{N} }
+\renewcommand{\Re}{ \mathbb{R} }
+\newcommand{\set}[1]{\mathcal{#1}}
+\newcommand{\identity}{ \ensuremath{ \mat I }}
+\newcommand{\bigO}{ \ensuremath{ \mathcal{O} }}
+\newcommand{\atan }{ \ensuremath{ \phantom{\cdot}\text{atan}_2 } }
+\newcommand{\acos }{ \ensuremath{ \cos^{-1} } }
+\newcommand{\asin }{ \ensuremath{ \sin^{-1} } }
+\newcommand{\logand }{ \ensuremath{ \wedge } }
+\newcommand{\logor }{ \ensuremath{ \vee } }
+\newcommand{\degree}{\,^{\circ}}
+\renewcommand{\th}{ \ensuremath{ ^{\text{th}}} }
+\newcommand{\sgn }[1]{ \ensuremath{ \text{sgn}\left( #1 \right) } }
+\newcommand{\union}{\ensuremath{ \cup }}
+\newcommand{\intersection}{\ensuremath{ \cap }}
+\newcommand{\hull }[1]{ \ensuremath{ \text{convex hull}\left( #1 \right) } }
+\newcommand{\proj }[1]{ \ensuremath{ \text{proj}\left( #1 \right) } }
+\newcommand{\trace }[1]{ \ensuremath{ \text{tr}\left( #1 \right) } }
+\renewcommand{\det}[1]{ \ensuremath{ \text{det}\left( #1 \right) } }
+\newcommand{\idx }[1]{ \ensuremath{ \mathbb{#1} } }
+\newcommand{\prox }[2]{ \ensuremath{ \text{prox}_{#1}\left( #2 \right) } }
