@@ -1,0 +1,4 @@
+GRIT/lib/*.a
+GRIT/build
+GRIT/bin/demo*
+GRIT/UTIL/include/util_get_data_file_path.h
