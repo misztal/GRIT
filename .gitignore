@@ -1,4 +1,8 @@
 GRIT/lib/*.a
 GRIT/build
 GRIT/bin/demo*
+GRIT/bin/output/*.svg
+GRIT/bin/output/*.m
+GRIT/bin/output/*.txt
+GRIT/bin/output/*.log
 GRIT/UTIL/include/util_get_data_file_path.h
