@@ -8,16 +8,21 @@ Please see `introduction.pdf` for a detailed description of the method, installa
 
 ## Principal developers
 
-Marek Krzysztof Misztal, Niels Bohr Institute, University of Copenhagen [misztal(at)nbi(dot)dk]
-Kenny Erleben, Department of Computer Science, University of Copenhagen [kenny(at)diku(dot)dk]
+* *Marek Krzysztof Misztal*, Niels Bohr Institute, University of Copenhagen, misztal(at)nbi(dot)dk
+
+* *Kenny Erleben*, Department of Computer Science, University of Copenhagen, kenny(at)diku(dot)dk
 
 ## Contributors
 
-Mark Jensen
-Tobias Hildebrandt
-Ulrik Bonde
-Danni Dromi
-Ask Neve Gamby
+* Mark Jensen
+
+* Tobias Hildebrandt
+
+* Ulrik Bonde
+
+* Danni Dromi
+
+* Ask Neve Gamby
 
 
 
