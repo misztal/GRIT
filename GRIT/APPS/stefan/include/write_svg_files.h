@@ -127,10 +127,10 @@ void write_temperature_plot(
   grit::details::draw_vertices(   file, all, engine.attributes(), coords, coords, 0u, style.m_vertex   );
 
   {
-    grit::SimplexSet interface = filter( all, grit::IsInterface(engine.mesh()) && !grit::IsDimension(engine.mesh(), 2u));
+    grit::SimplexSet interface_ = filter( all, grit::IsInterface(engine.mesh()) && !grit::IsDimension(engine.mesh(), 2u));
 
-    grit::details::draw_edges(    file, interface, engine.attributes(), coords, coords, 0u, style.m_edge_interface   );
-    grit::details::draw_vertices( file, interface, engine.attributes(), coords, coords, 0u, style.m_vertex_interface );
+    grit::details::draw_edges(    file, interface_, engine.attributes(), coords, coords, 0u, style.m_edge_interface   );
+    grit::details::draw_vertices( file, interface_, engine.attributes(), coords, coords, 0u, style.m_vertex_interface );
   }
 
   {

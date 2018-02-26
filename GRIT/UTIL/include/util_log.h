@@ -153,9 +153,13 @@ namespace util
     // requires us to go through our ocde and make sure no "global scope" log
     // instances is blocking any threads... This is tricky to do now.
 
+#ifndef WIN32
+
     static pthread_mutex_t my_mutex = PTHREAD_MUTEX_INITIALIZER;
 
     pthread_mutex_lock( &my_mutex );
+
+#endif
 
     if(LogInfo::on())
     {
@@ -180,7 +184,11 @@ namespace util
       }
     }
 
+#ifndef WIN32
+
     pthread_mutex_unlock( &my_mutex );
+
+#endif 
 
     return log;
   }

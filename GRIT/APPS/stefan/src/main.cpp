@@ -1,3 +1,5 @@
+#include <configuration.h>
+
 #include <stefan.h>
 
 #include <fixed_step_loop.h>
@@ -5,7 +7,6 @@
 #include <grit.h>
 #include <glue.h>
 #include <util.h>
-
 
 grit::engine2d_type  engine;
 grit::param_type     parameters;

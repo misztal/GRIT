@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <limits>
 #include <iosfwd>
+#include <iterator>
 
 namespace grit
 {

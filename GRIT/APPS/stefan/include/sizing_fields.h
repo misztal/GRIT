@@ -39,13 +39,13 @@ void update_sizing_fields(
   }
 
 {
-    grit::SimplexSet const interface = grit::filter(all, grit::IsInterface(mesh));
-    grit::SimplexSet const S         = mesh.star(interface);
-    grit::SimplexSet const C         = mesh.closure(S);
-    grit::SimplexSet const SC        = mesh.star(C);
-    grit::SimplexSet const CSC       = mesh.closure(SC);
-    grit::SimplexSet const SCSC      = mesh.star(CSC);
-    grit::SimplexSet const CSCSC     = mesh.closure(SCSC);
+    grit::SimplexSet const interface_ = grit::filter(all, grit::IsInterface(mesh));
+    grit::SimplexSet const S          = mesh.star(interface_);
+    grit::SimplexSet const C          = mesh.closure(S);
+    grit::SimplexSet const SC         = mesh.star(C);
+    grit::SimplexSet const CSC        = mesh.closure(SC);
+    grit::SimplexSet const SCSC       = mesh.star(CSC);
+    grit::SimplexSet const CSCSC      = mesh.closure(SCSC);
 
     glue::Phase      const zone3  = glue::make_phase(engine, CSCSC);
     glue::Phase      const zone2  = glue::make_phase(engine, CSC  );
@@ -79,10 +79,10 @@ void update_sizing_fields(
 
   {
     //--- Extract the contact surface
-    grit::SimplexSet const interface = grit::filter(all, grit::IsDimension(mesh, 1u)
+    grit::SimplexSet const interface_ = grit::filter(all, grit::IsDimension(mesh, 1u)
                                                     && grit::IsInterface(mesh));
 
-    glue::Phase const interface_line = glue::make_phase(engine, mesh.closure(interface));
+    glue::Phase const interface_line = glue::make_phase(engine, mesh.closure(interface_));
 
     std::vector<double> const refinement_values( interface_line.m_edges.size(), refinement_value/12.);
     std::vector<double> const coarsening_values( interface_line.m_edges.size(), coarsening_value/12.);

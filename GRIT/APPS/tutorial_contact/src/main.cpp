@@ -1,3 +1,5 @@
+#include <configuration.h>
+
 #include <grit.h>
 #include <util.h>
 #include <glue.h>

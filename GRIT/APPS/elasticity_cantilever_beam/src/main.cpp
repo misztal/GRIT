@@ -1,3 +1,5 @@
+#include <configuration.h>
+
 #include <fps_loop.h>
 #include <fixed_step_loop.h>
 

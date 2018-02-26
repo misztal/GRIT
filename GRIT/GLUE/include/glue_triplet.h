@@ -20,7 +20,7 @@ namespace glue
   {
   public:
 
-    static unsigned int UNDEFINED() { return std::numeric_limits<unsigned int>::max(); }
+	static unsigned int UNDEFINED() { return std::numeric_limits<unsigned int>::max(); }
 
   public:
 

@@ -1,3 +1,5 @@
+#include <configuration.h>
+
 #include <area_compute_maximize_area.h>
 #include <area_compute_constant_perimeter.h>
 #include <area_compute_perimeter.h>

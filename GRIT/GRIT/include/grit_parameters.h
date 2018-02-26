@@ -529,9 +529,9 @@ namespace grit
       std::vector< unsigned int>::const_iterator l = labels.begin();
       for( ; l != labels.end(); ++l)
       {
-        double const & label           = *l;
-        double const   lower_threshold = param.get_lower_threshold( operation_name, label);
-        double const   upper_threshold = param.get_upper_threshold( operation_name, label);
+        unsigned int const label           = *l;
+        double       const lower_threshold = param.get_lower_threshold( operation_name, label);
+        double       const upper_threshold = param.get_upper_threshold( operation_name, label);
 
         if( lower_threshold > 0.0 && upper_threshold > 0.0 && 2.0*lower_threshold >= upper_threshold)
         {

@@ -1,3 +1,5 @@
+#include <configuration.h>
+
 #include <erosion.h>
 
 #include <grit.h>

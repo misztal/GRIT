@@ -1,3 +1,5 @@
+#include <configuration.h>
+
 #include <fixed_step_loop.h>
 
 #include <grit.h>
