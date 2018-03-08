@@ -92,6 +92,8 @@ namespace grit
         //--- Insert a new vertex
         Simplex0   const m = mesh.insert();
 
+		mesh.submesh_boundary(m) = false;
+
         //--- Find the vertices of simplex
         Simplex0 v1, v2;
         extract_simplices(v1, v2, C);
