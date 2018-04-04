@@ -144,20 +144,20 @@ namespace stefan
       {
         if( grit::IsInterface(engine.mesh())(vertices[idx0]))
         {
-          make_gibbs_boundary_condition( idx0, domain, surface_tension, kinetic_coefficient, vx, vy, A, b );
+          //make_gibbs_boundary_condition( idx0, domain, surface_tension, kinetic_coefficient, vx, vy, A, b );
 
           // 2017-03-06 Marek: this should be used for standard solidification,
           //                   but won't yield dendrites on its own.
-          //A.insert( idx0, idx0, 1.)
-          //b[idx0] += t_melting;
+		  A.insert(idx0, idx0, 1.);
+          b[idx0] += t_melting;
         }
         // 2017-03-13 Marek: switching this off is equivalent to setting 0 von Neumann conditions.
         //                   TODO: try to make the b.c.'s configurable
-        /*else if( grit::IsBoundary(engine.mesh())(vertices[idx0]))
+        else if( grit::IsBoundary(engine.mesh())(vertices[idx0]))
         {
           A.insert( idx0, idx0, 1. );
           b[idx0] += t_outer;
-        }*/
+        }
         else
         {
           A.insert( idx0, idx0, M_ii+L00 );
@@ -171,18 +171,18 @@ namespace stefan
       {
         if( grit::IsInterface(engine.mesh())(vertices[idx1]))
         {
-          make_gibbs_boundary_condition( idx1, domain, surface_tension, kinetic_coefficient, vx, vy, A, b );
+          //make_gibbs_boundary_condition( idx1, domain, surface_tension, kinetic_coefficient, vx, vy, A, b );
 
           // 2017-03-06 Marek: this should be used for standard solidification,
           //                   but won't yield dendrites on its own.
-          //A.insert( idx1, idx1, 1. );
-          //b[idx1] += t_melting;
+          A.insert( idx1, idx1, 1. );
+          b[idx1] += t_melting;
         }
-        /*else if( grit::IsBoundary(engine.mesh())(vertices[idx1]))
+        else if( grit::IsBoundary(engine.mesh())(vertices[idx1]))
         {
           A.insert( idx1, idx1, 1. );
           b[idx1] += t_outer;
-        }*/
+        }
         else
         {
           A.insert( idx1, idx0, M_ij+L01 );
@@ -196,18 +196,18 @@ namespace stefan
       {
         if( grit::IsInterface(engine.mesh())(vertices[idx2]))
         {
-          make_gibbs_boundary_condition( idx2, domain, surface_tension, kinetic_coefficient, vx, vy, A, b );
+          //make_gibbs_boundary_condition( idx2, domain, surface_tension, kinetic_coefficient, vx, vy, A, b );
 
           // 2017-03-06 Marek: this should be used for standard solidification,
           //                   but won't yield dendrites on its own.
-          //A.insert( idx2, idx2, 1. );
-          //b[idx2] += t_melting;
+          A.insert( idx2, idx2, 1. );
+          b[idx2] += t_melting;
         }
-        /*else if( grit::IsBoundary(engine.mesh())(vertices[idx2]))
+        else if( grit::IsBoundary(engine.mesh())(vertices[idx2]))
         {
           A.insert( idx2, idx2, 1. );
           b[idx2] += t_outer;
-        }*/
+        }
         else
         {
           A.insert( idx2, idx0, M_ij+L02 );

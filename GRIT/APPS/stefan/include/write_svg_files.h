@@ -155,7 +155,7 @@ void write_svg_files(
 {
   util::Log log;
 
-  //static double const t_outer   = util::to_value<double>(settings.get_value("temperature_outer"      , "100.0"));
+  static double const t_outer   = util::to_value<double>(settings.get_value("temperature_outer"      , "100.0"));
   static double const t_melting = util::to_value<double>(settings.get_value("temperature_melting"    ,"1000.0"));
 
   std::string const & newline  = util::Log::newline();
@@ -164,7 +164,7 @@ void write_svg_files(
 
   glue::svg_draw(filename, engine, parameters);
 
-  write_temperature_plot( engine, parameters, output_path, frame_number, -t_melting, t_melting );
+  write_temperature_plot( engine, parameters, output_path, frame_number, t_outer, t_melting );
 
   log << tab << tab << "write_svg_files() Done writting  " << filename << newline;
 }

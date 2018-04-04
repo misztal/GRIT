@@ -39,6 +39,13 @@
 
 //////////////////////////////////// ASSIGNED //////////////////////////////////////////
 
+[Marek] (demo_smolarkiewicz) add automatic resizing of the domain to accomodate large motion
+
+[Marek] (demo_stefan) setup classic boundary condition, make sure runs full length
+                      fix advection and move to a branch temporarily
+
+[Marek] (demo_tutorial_contact) fix the simulation
+
 [Marek] dendrite_growth
 	[X]	Implement Stefan's problem
                 Adaptive time stepping required (could use the existing GRIT time-stepping approach with additional velocity updates...)
@@ -53,6 +60,7 @@
 [MAREK] Add some warning / exception if the target positions are not assigned to some non-ambient labels.
 
 [MAREK] create parameters automatically based on a small number of input parameters from the user
+
 
 //////////////////////////////////// OPEN //////////////////////////////////////////
 

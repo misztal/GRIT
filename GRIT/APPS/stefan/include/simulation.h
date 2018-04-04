@@ -27,7 +27,7 @@ void setup_simulation_fields(
   glue::clear_attribute( engine, "temperature", 0.0, glue::VERTEX_ATTRIBUTE() );
 
   std::vector<double> const & x_coords = domain.m_x;
-  //std::vector<double> const & y_coords = domain.m_y;
+  std::vector<double> const & y_coords = domain.m_y;
 
   unsigned int const n = x_coords.size();
 
@@ -35,7 +35,7 @@ void setup_simulation_fields(
 
   // 2016-03-06 Marek: this is correct for the end simulation, but won't yield
   //                   dendrites on its own.
-  /*for( unsigned int i=0u; i<n; ++i )
+  for( unsigned int i=0u; i<n; ++i )
   {
     double const x = x_coords[i]-core_x;
     double const y = y_coords[i]-core_y;
@@ -50,7 +50,7 @@ void setup_simulation_fields(
     {
       temperature[i] = t_melting + (r-core_radius)*(t_outer-t_melting)/0.5;
     }
-  }*/
+  }
 
   details::set_sub_range( engine, domain.m_all, "temperature", temperature, glue::VERTEX_ATTRIBUTE() );
 }

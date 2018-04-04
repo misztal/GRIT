@@ -52,24 +52,24 @@ void update_sizing_fields(
     glue::Phase      const zone1  = glue::make_phase(engine, C    );
 
     {
-      std::vector<double> const refinement_values( zone3.m_edges.size(), refinement_value/2.);
-      std::vector<double> const coarsening_values( zone3.m_edges.size(), coarsening_value/2.);
+      std::vector<double> const refinement_values( zone3.m_edges.size(), refinement_value/4.5);
+      std::vector<double> const coarsening_values( zone3.m_edges.size(), coarsening_value/4.5);
 
       glue::set_sub_range( engine, zone3, refinement_attribute_name, refinement_values, glue::EDGE_ATTRIBUTE());
       glue::set_sub_range( engine, zone3, coarsening_attribute_name, coarsening_values, glue::EDGE_ATTRIBUTE());
     }
 
     {
-      std::vector<double> const refinement_values( zone2.m_edges.size(), refinement_value/4.);
-      std::vector<double> const coarsening_values( zone2.m_edges.size(), coarsening_value/4.);
+      std::vector<double> const refinement_values( zone2.m_edges.size(), refinement_value/5.0);
+      std::vector<double> const coarsening_values( zone2.m_edges.size(), coarsening_value/5.0);
 
       glue::set_sub_range( engine, zone2, refinement_attribute_name, refinement_values, glue::EDGE_ATTRIBUTE());
       glue::set_sub_range( engine, zone2, coarsening_attribute_name, coarsening_values, glue::EDGE_ATTRIBUTE());
     }
 
     {
-      std::vector<double> const refinement_values( zone1.m_edges.size(), refinement_value/8.);
-      std::vector<double> const coarsening_values( zone1.m_edges.size(), coarsening_value/8.);
+      std::vector<double> const refinement_values( zone1.m_edges.size(), refinement_value/5.0);
+      std::vector<double> const coarsening_values( zone1.m_edges.size(), coarsening_value/5.0);
 
       glue::set_sub_range( engine, zone1, refinement_attribute_name, refinement_values, glue::EDGE_ATTRIBUTE());
       glue::set_sub_range( engine, zone1, coarsening_attribute_name, coarsening_values, glue::EDGE_ATTRIBUTE());
@@ -84,8 +84,8 @@ void update_sizing_fields(
 
     glue::Phase const interface_line = glue::make_phase(engine, mesh.closure(interface_));
 
-    std::vector<double> const refinement_values( interface_line.m_edges.size(), refinement_value/12.);
-    std::vector<double> const coarsening_values( interface_line.m_edges.size(), coarsening_value/12.);
+    std::vector<double> const refinement_values( interface_line.m_edges.size(), refinement_value/10.);
+    std::vector<double> const coarsening_values( interface_line.m_edges.size(), coarsening_value/10.);
 
     glue::set_sub_range( engine, interface_line, refinement_attribute_name, refinement_values, glue::EDGE_ATTRIBUTE());
     glue::set_sub_range( engine, interface_line, coarsening_attribute_name, coarsening_values, glue::EDGE_ATTRIBUTE());
