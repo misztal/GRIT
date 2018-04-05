@@ -50,20 +50,27 @@ namespace stefan
       double f_1 = field[id_local_1];
       double f_2 = field[id_local_2];
 
-      double const xc  = (x_0+x_1+x_2)/3.;
+	  double x_01 = x_1 - x_0;
+	  double x_02 = x_2 - x_0;
+	  double y_01 = y_1 - y_0;
+	  double y_02 = y_2 - y_0;
+	  double f_01 = f_1 - f_0;
+	  double f_02 = f_2 - f_0;
+
+      /*double const xc  = (x_0+x_1+x_2)/3.;
       double const yc  = (y_0+y_1+y_2)/3.;
       double const fc  = (f_0+f_1+f_2)/3.;
 
       x_0 -= xc;    x_1 -= xc;    //x_2 -= xc;
       y_0 -= yc;    y_1 -= yc;    //y_2 -= yc;
-      f_0 -= fc;    f_1 -= fc;    //f_2 -= fc;
+      f_0 -= fc;    f_1 -= fc;    //f_2 -= fc;*/
 
-      double const det = x_0*y_1 - y_0*x_1;
+      double const det = x_01*y_02 - y_01*x_02;
 
       assert( std::fabs(det)>0. || "compute_directional_derivative() Error! encountered degenerate triangle!");
 
-      double const grad_x = (f_0*y_1-f_1*y_0)/det;
-      double const grad_y = (x_0*f_1-x_1*f_0)/det;
+      double const grad_x = (f_01*y_02-f_02*y_01)/det;
+      double const grad_y = (x_01*f_02-x_02*f_01)/det;
 
       return grad_x*n_x + grad_y*n_y;
     }
@@ -216,7 +223,10 @@ namespace stefan
       //double const det_b =      -b_x*hat_na_y +      b_y*hat_na_x;
 
       v_x = (un_a*na_x*l_a+un_b*nb_x*l_b)/(l_a+l_b);
-      v_y = (un_a*na_y*l_a+un_b*nb_x*l_b)/(l_a+l_b);
+      v_y = (un_a*na_y*l_a+un_b*nb_y*l_b)/(l_a+l_b);
+
+	  //v_x = -(na_x*l_a+nb_x*l_b)/(l_a+l_b);
+	  //v_y = -(na_y*l_a+nb_y*l_b)/(l_a+l_b);
 
       /*if( std::abs(det) > 1e-2)
       {

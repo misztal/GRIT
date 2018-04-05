@@ -101,7 +101,7 @@ namespace stefan
       double const ct  = std::cos(10.*theta);
       double const ct2 = ct*ct;
       double const ct4 = ct2*ct2;
-      double const dd = 1.-0.025*ct4*ct4;
+      double const dd = 1.-0.05*ct4*ct4;
 
       x[idx] = dx*dd + core_x;
       y[idx] = dy*dd + core_y;

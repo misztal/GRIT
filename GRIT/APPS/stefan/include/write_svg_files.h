@@ -164,7 +164,7 @@ void write_svg_files(
 
   glue::svg_draw(filename, engine, parameters);
 
-  write_temperature_plot( engine, parameters, output_path, frame_number, t_outer, t_melting );
+  write_temperature_plot( engine, parameters, output_path, frame_number, t_outer, 1.2*t_melting );
 
   log << tab << tab << "write_svg_files() Done writting  " << filename << newline;
 }
