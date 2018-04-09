@@ -526,7 +526,11 @@ namespace grit
     {
       face_handle f1;
       face_handle f2;
-      get_faces_from_edge(e, f1, f2);
+
+	  if(m_mesh.is_valid_edge_handle(e))
+	  { 
+		get_faces_from_edge(e, f1, f2);
+	  }
 
       if (m_mesh.is_valid_face_handle(f1) && m_mesh.is_valid_face_handle(f2))
         return label(face_to_simplex(f1)) != label(face_to_simplex(f2));
@@ -758,7 +762,7 @@ namespace grit
 
       if (orientation(simplex) == negative)
       {
-        return face_to_simplex(m_mesh.add_face(v0, v1, v2));
+	    return face_to_simplex(m_mesh.add_face(v0, v1, v2));
       }
       else
       {

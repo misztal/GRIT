@@ -106,8 +106,8 @@ void update_sizing_fields()
 
     glue::Phase const phase = glue::make_phase(engine, objects);
 
-    std::vector<double> const refinement_values( phase.m_edges.size(), 0.06);
-    std::vector<double> const coarsening_values( phase.m_edges.size(), 0.015);
+    std::vector<double> const refinement_values( phase.m_edges.size(), 0.025);
+    std::vector<double> const coarsening_values( phase.m_edges.size(), 0.01);
 
     glue::set_sub_range( engine, phase, refinement_attribute_name, refinement_values, glue::EDGE_ATTRIBUTE());
     glue::set_sub_range( engine, phase, coarsening_attribute_name, coarsening_values, glue::EDGE_ATTRIBUTE());
@@ -121,7 +121,7 @@ void update_sizing_fields()
 
     glue::Phase const contact_line = glue::make_phase(engine, mesh.closure(contact));
 
-    std::vector<double> const refinement_values( contact_line.m_edges.size(), 0.02);
+    std::vector<double> const refinement_values( contact_line.m_edges.size(), 0.0125);
     std::vector<double> const coarsening_values( contact_line.m_edges.size(), 0.005);
 
     glue::set_sub_range( engine, contact_line, refinement_attribute_name, refinement_values, glue::EDGE_ATTRIBUTE());
@@ -204,8 +204,11 @@ int main()
     do_simulation_step();
     logging << tab << "Simulation step " << i << " done..." << newline;
 
-    update_sizing_fields();
-    logging << tab << "Updated sizing fields" << newline;
+	if( use_sizing_fields )
+	{
+      update_sizing_fields();
+      logging << tab << "Updated sizing fields" << newline;
+	}
 
     engine.update(parameters);
     logging << tab << "Updated the mesh" << newline;

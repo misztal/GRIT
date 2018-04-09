@@ -85,7 +85,7 @@ namespace grit
         T const & distance     = -parameters.get_strength( "vertex_split", label);
         V const   inside_point = compute_offset_position<MT>( v_old, mesh, attributes, label, distance);
 
-        attributes.set_current_value( v_new, inside_point);
+        attributes.set_current_value( v_new, inside_point );
 
         AMT::add_simplex0_label( v_new, label, attributes);
 

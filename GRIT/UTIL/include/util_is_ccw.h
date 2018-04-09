@@ -10,6 +10,13 @@ namespace util
                      , V const & v2
                      )
   {
+    // Transform to barycentric system of coordinates
+	V const vc = (v0 + v1 + v2) / 3.;
+
+	V const w0 = v0 - vc;
+	V const w1 = v1 - vc;
+	V const w2 = v2 - vc;
+
     //  The (double) signed area is by definition given as
     //
     //  d =(v1-v0) x (v2-v1)
@@ -21,9 +28,9 @@ namespace util
     //
     //  if d>0 we have positive area and this is the same as ccw order
     //
-    return (v0[0] * v1[1]) + (v1[0] * v2[1]) +
-           (v2[0] * v0[1]) - (v1[1] * v2[0]) -
-           (v2[1] * v0[0]) - (v0[1] * v1[0]) > 0;
+    return (w0[0] * w1[1]) + (w1[0] * w2[1]) +
+           (w2[0] * w0[1]) - (w1[1] * w2[0]) -
+           (w2[1] * w0[0]) - (w0[1] * w1[0]) > 0;
   }
 
 }//end of namespace util

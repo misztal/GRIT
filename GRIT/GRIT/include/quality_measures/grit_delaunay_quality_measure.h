@@ -13,6 +13,7 @@
 
 #include <util_is_ccw.h>
 #include <util_determinant.h>
+#include <util_triangle_area.h>
 
 namespace grit
 {
@@ -70,7 +71,7 @@ namespace grit
                             c[0] - d[0], c[1] - d[1], (c[0]*c[0] - dxdx) + (c[1]*c[1] - dydy)
                             );
 
-        return value > 0;
+		return value > 0;
       }
 
     public:
@@ -94,6 +95,30 @@ namespace grit
 
         if (Ts.size(2u) < 2u)
           return false;
+
+		SimplexSet::simplex2_const_iterator it = Ts.begin2();
+		Simplex2 t1 = *it;
+		++it;
+		Simplex2 t2 = *it;
+
+        //--- 2018-04-09 Marek: this helps preventing the polymesh assertion fail.
+		if (util::SignedTriangleArea()(
+		                               get_coordinates(t1.get_idx0())
+			                         , get_coordinates(t1.get_idx1())
+			                         , get_coordinates(t1.get_idx2())
+		                             ) <= 0.)
+		{
+          return false;
+		}
+
+        if (util::SignedTriangleArea()(
+		                               get_coordinates(t2.get_idx0())
+			                         , get_coordinates(t2.get_idx1())
+			                         , get_coordinates(t2.get_idx2())
+		                             ) <= 0.)
+		{
+          return false;
+		}
 
         SimplexSet Vs = m_mesh.closure(Ts);
 
