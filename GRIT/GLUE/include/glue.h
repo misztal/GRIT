@@ -46,11 +46,13 @@
 #include <glue_make_adjacency.h>
 #include <glue_compute_contact_points.h>
 #include <glue_compute_neighbors.h>
+#include <glue_compute_bounding_box.h>
 #include <glue_matlab_write_mesh.h>
 #include <glue_sub_range.h>
 #include <glue_copy_attribute.h>
 #include <glue_clear_attribute.h>
 #include <glue_svg_draw.h>
+#include <glue_resize_domain.h>
 
 // GLUE_H
 #endif

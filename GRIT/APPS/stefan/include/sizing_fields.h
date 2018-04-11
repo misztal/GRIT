@@ -38,7 +38,7 @@ void update_sizing_fields(
     glue::set_sub_range( engine, phase, coarsening_attribute_name, coarsening_values, glue::EDGE_ATTRIBUTE());
   }
 
-{
+  {
     grit::SimplexSet const interface_ = grit::filter(all, grit::IsInterface(mesh));
     grit::SimplexSet const S          = mesh.star(interface_);
     grit::SimplexSet const C          = mesh.closure(S);

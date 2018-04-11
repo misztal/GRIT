@@ -17,7 +17,6 @@
 [Marek] negative_curvature_flow (erosion)
 		Make high quality movie (high res quality mesh)
 
-
 [Marek] elasticity_XXX
 		Tweak parameters and make motions as extreme as possible
 		Make high quality movie (high res quality mesh)
@@ -36,18 +35,13 @@
 		Tweak parameters and make deformation as extreme as possible
 		Make high quality movie (high res quality mesh)
 
-
 //////////////////////////////////// ASSIGNED //////////////////////////////////////////
-
-[Marek] (demo_smolarkiewicz) add automatic resizing of the domain to accomodate large motion
-
-[Marek] (demo_tutorial_contact) fix the simulation
 
 [Marek] dendrite_growth
 	[X]	Implement Stefan's problem
                 Adaptive time stepping required (could use the existing GRIT time-stepping approach with additional velocity updates...)
         [X]     Add sizing field
-		Make high quality movie (high res quality mesh)
+        	    Make high quality movie (high res quality mesh)
                 Add curvature preserving refinement
 
 [Marek] Add checking if "target" has been defined for all eligible phases.
@@ -58,16 +52,15 @@
 
 [MAREK] create parameters automatically based on a small number of input parameters from the user
 
-
 //////////////////////////////////// OPEN //////////////////////////////////////////
+
+Add warning / message when interface hits the boundary
 
 Not so much a bug, as observation: in Stefan demo, boundary condition depends on the curvature. In a way it is implemented right now, interface_coarsening preserves interface curvature, however, interface smoothing and interface refinement - do not. It is probably too much work for the first release, however, taking advantage of the curvature information could lead to better performance of GRIT in simulations.
 
 Unit tests for iterative solvers, test PCG
 
 copy_attributes will crash with an exception if one forgets to set target coordinates on a "live" phase. It is rather hard as end-user to figure out what the error really is from this exception. Could we add some feature to help end-users, either by a gracefull fallback or some messaging/failure that make sense to the end-user?
-
-Fix bug when a phase moves out and touches the boundary
 
 Clean-up code review comments
 
@@ -82,6 +75,12 @@ Create a level-set-segmentation demo
 Create a new more suitable domain decomposition algorithm that works for coarse meshes
 
 //////////////////////////////////// DONE LIST //////////////////////////////////////////
+
+[Marek] Fix bug when a phase moves out and touches the boundary
+
+[Marek] (demo_smolarkiewicz) add automatic resizing of the domain to accomodate large motion
+
+[Marek] (demo_tutorial_contact) fix the simulation
 
 [Marek] (demo_stefan) setup classic boundary condition, make sure runs full length
                       fix advection and move to a branch temporarily

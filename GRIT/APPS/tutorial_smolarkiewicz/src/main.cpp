@@ -4,14 +4,19 @@
 #include <glue.h>
 #include <util.h>
 
-grit::engine2d_type  engine;
-grit::param_type     parameters;
+grit::engine2d_type       engine;
+grit::param_type          parameters;
 
 util::ConfigFile      settings;
 util::Log             logging;
 
 std::string const newline = util::Log::newline();
 std::string const tab     = util::Log::tab();
+
+//--- Decide upon some names for creating user-custom attribute fields,
+//--- they can be anything you want as long as they are unique.
+std::string const refinement_attribute_name = "my_refinement_values";
+std::string const coarsening_attribute_name = "my_coarsening_values";
 
 
 void write_svg_files(
@@ -36,6 +41,8 @@ void do_simulation_step()
 
   glue::Phase const phase    = glue::make_phase(engine, object_label);
 
+  glue::resize_domain( engine );
+
   std::vector<double> px;
   std::vector<double> py;
 
@@ -51,7 +58,7 @@ void do_simulation_step()
   px_new.resize(N);      ///< new x-coordinate
   py_new.resize(N);      ///< new x-coordinate
 
-  double const dt = 0.01;
+  double const dt = 0.0025;
 
   for( unsigned int n = 0; n < N; ++n)
   {
@@ -66,6 +73,105 @@ void do_simulation_step()
   }
 
   glue::set_sub_range_target(engine, phase, px_new, py_new);
+}
+
+
+void update_sizing_fields()
+{
+  grit::InterfaceMesh const & mesh = engine.mesh();
+
+  double const refinement_value = util::to_value<double>(settings.get_value("custom_refinement_value","0.5"));
+  double const coarsening_value = util::to_value<double>(settings.get_value("custom_coarsening_value","0.1"));;
+
+  glue::clear_attribute( engine
+                        , refinement_attribute_name
+                        , refinement_value
+                        , glue::EDGE_ATTRIBUTE()
+                        );
+
+  glue::clear_attribute( engine
+                        , coarsening_attribute_name
+                        , coarsening_value
+                        , glue::EDGE_ATTRIBUTE()
+                        );
+
+  grit::SimplexSet const all = engine.mesh().get_all_simplices();
+
+  {
+
+    grit::SimplexSet const interface_ = grit::filter(all, grit::IsInterface(mesh));
+    grit::SimplexSet const S          = mesh.star(interface_);
+    grit::SimplexSet const C          = mesh.closure(S);
+    grit::SimplexSet const SC         = mesh.star(C);
+    grit::SimplexSet const CSC        = mesh.closure(SC);
+
+    glue::Phase      const zone2  = glue::make_phase(engine, CSC  );
+    glue::Phase      const zone1  = glue::make_phase(engine, C    );
+
+    {
+      std::vector<double> const refinement_values( zone2.m_edges.size(), refinement_value/3.0);
+      std::vector<double> const coarsening_values( zone2.m_edges.size(), coarsening_value/3.0);
+
+      glue::set_sub_range( engine, zone2, refinement_attribute_name, refinement_values, glue::EDGE_ATTRIBUTE());
+      glue::set_sub_range( engine, zone2, coarsening_attribute_name, coarsening_values, glue::EDGE_ATTRIBUTE());
+    }
+
+    {
+      std::vector<double> const refinement_values( zone1.m_edges.size(), refinement_value/10.0);
+      std::vector<double> const coarsening_values( zone1.m_edges.size(), coarsening_value/10.0);
+
+      glue::set_sub_range( engine, zone1, refinement_attribute_name, refinement_values, glue::EDGE_ATTRIBUTE());
+      glue::set_sub_range( engine, zone1, coarsening_attribute_name, coarsening_values, glue::EDGE_ATTRIBUTE());
+    }
+  }
+
+  {
+    //--- Extract the contact surface
+    grit::SimplexSet const interface_ = grit::filter(all, grit::IsDimension(mesh, 1u)
+                                                    && grit::IsInterface(mesh));
+
+    glue::Phase const interface_line = glue::make_phase(engine, mesh.closure(interface_));
+
+    std::vector<double> const refinement_values( interface_line.m_edges.size(), refinement_value/20.);
+    std::vector<double> const coarsening_values( interface_line.m_edges.size(), coarsening_value/20.);
+
+    glue::set_sub_range( engine, interface_line, refinement_attribute_name, refinement_values, glue::EDGE_ATTRIBUTE());
+    glue::set_sub_range( engine, interface_line, coarsening_attribute_name, coarsening_values, glue::EDGE_ATTRIBUTE());
+  }
+}
+
+
+void create_sizing_fields()
+{
+  //--- Now create the actual edge attribute fields that will control maximum
+  //--- edge length before doing a refinement and the lowest edge length
+  //--- before doing coarsening.
+  engine.attributes().create_attribute( refinement_attribute_name, 1u);
+  engine.attributes().create_attribute( coarsening_attribute_name, 1u);
+
+  //--- Fill in some sensible initial values for the refinement and coarsening
+  //--- edge length values. Make sure coarsening is lower than refinement.
+  double const refinement_value = util::to_value<double>(settings.get_value("custom_refinement_value","0.1"));
+  double const coarsening_value = util::to_value<double>(settings.get_value("custom_coarsening_value","0.02"));;
+
+  glue::clear_attribute( engine
+                        , refinement_attribute_name
+                        , refinement_value
+                        , glue::EDGE_ATTRIBUTE()
+                        );
+
+  glue::clear_attribute( engine
+                        , coarsening_attribute_name
+                        , coarsening_value
+                        , glue::EDGE_ATTRIBUTE()
+                        );
+
+  //--- Next connect the user defined edge attribute fields to the actual
+  //--- mesh algorithm operations that do refinement and coarsening.
+  parameters.set_lower_threshold_attribute( "refinement",           refinement_attribute_name);
+  parameters.set_lower_threshold_attribute( "interface_refinement", refinement_attribute_name);
+  parameters.set_upper_threshold_attribute( "coarsening",           coarsening_attribute_name);
+  parameters.set_upper_threshold_attribute( "interface_coarsening", coarsening_attribute_name);
 }
 
 int main()
@@ -94,9 +200,16 @@ int main()
   }
 
   grit::init_engine_with_mesh_file(
-                                        util::get_data_file_path(txt_filename)
-                                        , parameters,engine
-                                        );
+                                   util::get_data_file_path(txt_filename)
+                                   , parameters,engine
+                                   );
+
+  bool const use_sizing_fields = util::to_value<bool>(settings.get_value("use_sizing_fields","true"));
+
+  if( use_sizing_fields)
+  {
+    create_sizing_fields();
+  }
 
   write_svg_files(output_path, 0u);
   logging << tab << "Wrote svg file for frame 0" << newline;
@@ -105,6 +218,12 @@ int main()
   {
     do_simulation_step();
     logging << tab << "Simulation step " << i << " done..." << newline;
+
+    if( use_sizing_fields )
+	{
+      update_sizing_fields();
+      logging << tab << "Updated sizing fields" << newline;
+	}
 
     engine.update(parameters);
     logging << tab << "Updated the mesh" << newline;
