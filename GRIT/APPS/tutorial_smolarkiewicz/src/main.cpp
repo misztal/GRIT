@@ -18,6 +18,8 @@ std::string const tab     = util::Log::tab();
 std::string const refinement_attribute_name = "my_refinement_values";
 std::string const coarsening_attribute_name = "my_coarsening_values";
 
+bool reverse_flow = false;
+
 
 void write_svg_files(
                      std::string const & output_path
@@ -58,18 +60,37 @@ void do_simulation_step()
   px_new.resize(N);      ///< new x-coordinate
   py_new.resize(N);      ///< new x-coordinate
 
-  double const dt = 0.0025;
+  double const dt   = 0.0025;
+  double const M    = 50;  ///< number of sub-steps
+  double const dt_M = dt/M;
 
-  for( unsigned int n = 0; n < N; ++n)
+  for( unsigned int m = 0; m < M; ++m)
   {
-    double const x = px[n];
-    double const y = py[n];
+    for( unsigned int n = 0; n < N; ++n)
+    {
+      double const x = px[n];
+      double const y = py[n];
 
-    double u = - sin(4.0 * pi * (x + 0.5 )) * sin( 4.0*pi*(y + 0.5 ));
-    double v =  -cos(4.0 * pi * (x + 0.5 )) * cos( 4.0*pi*(y + 0.5 ));
+      double u =  -sin(4.0 * pi * (x + 0.5 )) * sin( 4.0*pi*(y + 0.5 ));
+      double v =  -cos(4.0 * pi * (x + 0.5 )) * cos( 4.0*pi*(y + 0.5 ));
 
-    px_new[n] = px[n] + u*dt;
-    py_new[n] = py[n] + v*dt;
+      if( reverse_flow )
+      {
+        px_new[n] = px[n] - u*dt_M;
+        py_new[n] = py[n] - v*dt_M;
+
+        px[n] = px_new[n];
+        py[n] = py_new[n];
+      }
+      else
+      {
+        px_new[n] = px[n] + u*dt_M;
+        py_new[n] = py[n] + v*dt_M;
+
+        px[n] = px_new[n];
+        py[n] = py_new[n];
+      }
+    }
   }
 
   glue::set_sub_range_target(engine, phase, px_new, py_new);
@@ -216,6 +237,8 @@ int main()
 
   for (unsigned int i = 1u; i <= max_steps; ++i)
   {
+    if( i==(max_steps/2) ) reverse_flow = true;
+
     do_simulation_step();
     logging << tab << "Simulation step " << i << " done..." << newline;
 
