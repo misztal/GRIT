@@ -1,0 +1,30 @@
+INCLUDE_DIRECTORIES(
+  ${Boost_INCLUDE_DIRS}
+  ${OpenTissue_INCLUDE_DIRS}
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/GRIT/include
+  ${PROJECT_SOURCE_DIR}/GLUE/include
+  ${PROJECT_SOURCE_DIR}/UTIL/include
+  include
+  )
+
+ADD_SUBDIRECTORY(3RDPARTY/pybind11)
+
+PYBIND11_ADD_MODULE(pygrit SHARED python.cpp)
+
+TARGET_LINK_LIBRARIES(
+  pygrit
+  PRIVATE
+  glue
+  util
+  grit
+  ${CMAKE_THREAD_LIBS_INIT}
+  )
+
+SET_TARGET_PROPERTIES(pygrit PROPERTIES FOLDER "${PROJECT_SOURCE_DIR}/lib/")
+
+INSTALL( 
+         TARGETS pygrit EXPORT pygritTargets
+         LIBRARY DESTINATION "${PROJECT_SOURCE_DIR}/lib"
+         ARCHIVE DESTINATION "${PROJECT_SOURCE_DIR}/lib"
+       )

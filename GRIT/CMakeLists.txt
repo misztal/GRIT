@@ -22,9 +22,9 @@ ELSE (MSVC)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fpermissive")
 ENDIF(MSVC)
 
-SET(ENABLE_UNIT_TESTS   0 CACHE STRING "Set to 1 if unit tests should be added to project files and 0 otherwise")
-SET(ENABLE_CUDA         0 CACHE STRING "Set to 1 if CUDA should be used in the project and 0 otherwise")
-
+SET(ENABLE_UNIT_TESTS      0 CACHE STRING "Set to 1 if unit tests should be added to project files and 0 otherwise")
+SET(ENABLE_CUDA            0 CACHE STRING "Set to 1 if CUDA should be used in the project and 0 otherwise")
+SET(ENABLE_PYTHON_WRAPPERS 1 CACHE STRING "Set to 1 if python wrappers should be created using pybind")
 
 SET(TRUNK_DIR ${PROJECT_SOURCE_DIR}/..)
 FIND_PACKAGE(3RDPARTY     PATHS "${TRUNK_DIR}/3RDPARTY"       REQUIRED)
@@ -56,3 +56,6 @@ IF(ENABLE_UNIT_TESTS)
   ADD_SUBDIRECTORY(unit_tests)
 ENDIF()
 
+IF(ENABLE_PYTHON_WRAPPERS)
+  ADD_SUBDIRECTORY(wrappers/python)
+ENDIF()
