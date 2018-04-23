@@ -19,7 +19,8 @@ IF (MSVC)
   ADD_DEFINITIONS(-D_SCL_SECURE_NO_WARNINGS)
   ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
 ELSE (MSVC)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fpermissive")
+  # 2018-04-23 Marek: fPIC flag is only needed for Python wrapper
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fpermissive -fPIC")
 ENDIF(MSVC)
 
 SET(ENABLE_UNIT_TESTS      0 CACHE STRING "Set to 1 if unit tests should be added to project files and 0 otherwise")
