@@ -10,7 +10,7 @@ Please see `introduction.pdf` for a detailed description of the method, installa
 
 * *Marek Krzysztof Misztal*, Niels Bohr Institute, University of Copenhagen, misztal(at)nbi(dot)dk
 
-* *Kenny Erleben*, Department of Computer Science, University of Copenhagen, kenny(at)diku(dot)dk
+* *Kenny Erleben*, Department of Computer Science, University of Copenhagen, kenny(at)di(dot)ku(dot)dk
 
 ## Contributors
 
