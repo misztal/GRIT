@@ -51,7 +51,7 @@ PYBIND11_MODULE( pygrit, m )
   //                   to reading the parameters from the cfg files), but it should be rather
   //                   simple to add them later.
   py::class_<param_type>(m, "Parameters")
-    .def(py::init([]() { return new param_type(); }) )
+  .def(py::init([]() { return new param_type(); }) );
     //.def("number_of_subdomains", (unsigned int const & (param_type::*)() const) &param_type::number_of_subdomains)
     //.def("number_of_subdomains", (unsigned int & (param_type::*)()) &param_type::number_of_subdomains)
     //.def("get_upper_threshold", &param_type::get_upper_threshold)
