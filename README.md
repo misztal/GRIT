@@ -24,7 +24,13 @@ Please see `introduction.pdf` for a detailed description of the method, installa
 
 * Ask Neve Gamby
 
+## Python Interface
 
+First you must run CMake on GRIT, then open up your project files, and build the target pygrit. You can also just build all targets, but if you just want to play with Python then pygrit is sufficient.
 
+After you have build the pygrit target in GRIT then your bin folder should contain a file named pygrit.cpython-36m-darwin.so or similar. Now one can use the python wrapper immediately as follows
 
+cd  GRIT/bin
+python tutorial_vortex_in_a_box.py 
 
+The python script file tutorial_vortex_in_a_box.py  shows how to get started immediately writing a python "simulator" that uses GRIT.
