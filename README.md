@@ -8,7 +8,7 @@ Please see `introduction.pdf` for a detailed description of the method, installa
 
 ## Principal developers
 
-* *Marek Krzysztof Misztal*, Niels Bohr Institute, University of Copenhagen, misztal(at)nbi(dot)dk
+* *Marek Krzysztof Misztal*, Niels Bohr Institute, University of Copenhagen, marek.misztal(at)gmail(dot)com
 
 * *Kenny Erleben*, Department of Computer Science, University of Copenhagen, kenny(at)di(dot)ku(dot)dk
 
