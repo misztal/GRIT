@@ -17,6 +17,94 @@ namespace py = pybind11;
   
 PYBIND11_MODULE( pygrit, m ) 
 {
+
+  /**
+   * A generic buffer class.
+   * Is used to expose buffer like data from C++ to Python.
+   */
+  class BufData
+  {
+  public:
+
+    void *_ptr = nullptr;         ///< Pointer to the underlying storage
+    size_t _itemsize = 0;         ///< Size of individual items in bytes
+    std::string _format;          ///< For homogeneous buffers, see https://docs.python.org/3/library/struct.html#format-characters
+    size_t _ndim = 0;             ///< Number of dimensions
+    std::vector<size_t> _shape;   ///< Shape of the buffer (1 entry per dimension)
+    std::vector<size_t> _strides; ///< Number of entries between adjacent entries (for each per dimension)
+
+  public:
+
+    BufData(
+            void * ptr
+            , size_t itemsize
+            , std::string const & format
+            , size_t ndim
+            , std::vector<size_t> const & shape
+            , std::vector<size_t> const & strides
+            )
+    : _ptr(ptr)
+    , _itemsize(itemsize)
+    , _format(format)
+    , _ndim(ndim)
+    , _shape(shape)
+    , _strides(strides)
+    {
+    }
+
+    BufData(
+            void * ptr
+            , size_t itemsize
+            , std::string const & format
+            , size_t size
+            )
+    : BufData(ptr
+              , itemsize
+              , format
+              , 1
+              , std::vector<size_t> { size }
+              , std::vector<size_t> { itemsize }
+              )
+    {
+    }
+
+    /***
+     * Specialized constructor that creates 2D arrays of size rows x cols and each entry is of type format.
+     */
+    BufData(
+            void * ptr                   // Raw data stored in row-major format.
+            , std::string const & format // The data type of each element
+            , size_t rows                // Number of rows
+            , size_t cols                // The number of columns
+            )
+    : BufData(
+              ptr
+              , sizeof(float)
+              , format
+              , 2
+              , std::vector<size_t> { rows, cols }
+              , std::vector<size_t> { sizeof(float)*cols, sizeof(float) }
+              )
+    {
+    }
+
+  };
+
+  py::class_<BufData> BufData_py(m, "BufData", py::buffer_protocol());
+  BufData_py.def_buffer([](BufData& self)
+                        { return py::buffer_info(
+                                                 self._ptr,
+                                                 self._itemsize,
+                                                 self._format,
+                                                 self._ndim,
+                                                 self._shape,
+                                                 self._strides); }
+                        );
+
+
+
+
+
   using grit::param_type;
   using grit::engine2d_type;
 
@@ -64,7 +152,28 @@ PYBIND11_MODULE( pygrit, m )
     .def("update", &engine2d_type::update);
 
   py::class_<Phase>(m, "Phase")
-    .def(py::init<>());
+    .def(py::init<>())
+    .def("get_vertices", [](glue::Phase & self) -> BufData
+       {
+         return BufData(
+                        const_cast<grit::Simplex0*>(self.m_vertices.data())  //Raw pointer to vertices
+                        , sizeof(grit::Simplex0)     // Number of bytes for 1 Simplex0 type
+                        , std::string("@L")       // 1 unsigned long
+                        , self.m_vertices.size()   // Number of vertices
+                        );
+
+       }, py::keep_alive<0, 1>())
+    .def("get_triangles", [](glue::Phase & self) -> BufData
+       {
+         return BufData(
+                        const_cast<glue::Triplet*>(self.m_triangles.data())  //Raw pointer to triangles
+                        , sizeof(glue::Triplet)     // Number of bytes for one Triple type
+                        , std::string("@III")       // 3 unsigned ints
+                        , self.m_triangles.size()   // Number of triangles
+                        );
+
+       }, py::keep_alive<0, 1>());
+
 
   //--- Binding functions from util, grit and glue
 
