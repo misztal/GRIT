@@ -216,21 +216,15 @@ namespace glue
   }
 
   inline void get_sub_range_current(
-                                    grit::engine2d_type            const & engine
-                                    , glue::Phase                  const & phase
-                                    , std::vector<double>                & x
-                                    , std::vector<double>                & y
+                                    grit::engine2d_type  const & engine
+                                    , glue::Phase        const & phase
+                                    , double                   * x
+                                    , double                   * y
                                     )
   {
     typedef grit::default_grit_types::vector3_type V;
 
     unsigned int const N = phase.m_vertices.size();
-
-    x.clear();
-    x.resize(N,0.0);
-
-    y.clear();
-    y.resize(N,0.0);
 
     for(unsigned int i = 0; i < N; ++i)
     {
@@ -241,6 +235,24 @@ namespace glue
       x[i] = p(0);
       y[i] = p(1);
     }
+  }
+
+  inline void get_sub_range_current(
+                                    grit::engine2d_type  const & engine
+                                    , glue::Phase        const & phase
+                                    , std::vector<double>      & x
+                                    , std::vector<double>      & y
+                                    )
+  {
+    unsigned int const N = phase.m_vertices.size();
+
+    x.clear();
+    x.resize(N,0.0);
+
+    y.clear();
+    y.resize(N,0.0);
+
+    get_sub_range_current( engine, phase, x.data(), y.data());
   }
 
   /**
@@ -380,8 +392,8 @@ namespace glue
   inline void set_sub_range_target(
                                    grit::engine2d_type         & engine
                                    , glue::Phase         const & phase
-                                   , std::vector<double> const & x
-                                   , std::vector<double> const & y
+                                   , double              const * x
+                                   , double              const * y
                                    , bool                const & using_partial_data = false
                                    )
   {
@@ -394,24 +406,6 @@ namespace glue
       log << "set_sub_range_target() Invalid argument labels must have size one" << util::Log::newline();
 
       throw std::invalid_argument("trying to get sub range from non-existing vertex attribute");
-    }
-
-    if(phase.m_vertices.size() != x.size())
-    {
-      util::Log log;
-
-      log << "set_sub_range_target(): The number of vertices must be equal to the number of x-values" << util::Log::newline();
-
-      throw std::invalid_argument("Vertices and x-values must be of same size");
-    }
-
-    if(phase.m_vertices.size() != y.size())
-    {
-      util::Log log;
-
-      log << "set_sub_range_target(): The number of vertices must be equal to the number of y-values" << util::Log::newline();
-
-      throw std::invalid_argument("Vertices and y-values must be of same size");
     }
 
     bool override_partial_data_flag = false;
@@ -475,8 +469,39 @@ namespace glue
     }
   }
 
+  inline void set_sub_range_target(
+                                   grit::engine2d_type         & engine
+                                   , glue::Phase         const & phase
+                                   , std::vector<double> const & x
+                                   , std::vector<double> const & y
+                                   , bool                const & using_partial_data = false
+                                   )
+  {
+    typedef grit::default_grit_types::vector3_type V;
+
+    if(phase.m_vertices.size() != x.size())
+    {
+      util::Log log;
+
+      log << "set_sub_range_target(): The number of vertices must be equal to the number of x-values" << util::Log::newline();
+
+      throw std::invalid_argument("Vertices and x-values must be of same size");
+    }
+
+    if(phase.m_vertices.size() != y.size())
+    {
+      util::Log log;
+
+      log << "set_sub_range_target(): The number of vertices must be equal to the number of y-values" << util::Log::newline();
+
+      throw std::invalid_argument("Vertices and y-values must be of same size");
+    }
+
+    set_sub_range_target(engine, phase, x, y, using_partial_data);
+  }
+
   inline void set_sub_range_current(
-                                    grit::engine2d_type                &  engine
+                                    grit::engine2d_type                & engine
                                     , glue::Phase                const & phase
                                     , std::vector<double>        const & x
                                     , std::vector<double>        const & y

@@ -1,3 +1,4 @@
+import numpy as np
 import pygrit as GRIT
 import math
 
@@ -11,16 +12,18 @@ def write_svg_files(engine, parameters, output_path, frame_number):
 def do_simulation_step(engine, settings):
     object_label = int(settings.get_value('object_label', '1'))
     phase = GRIT.make_phase(engine, object_label)
-    px = GRIT.VectorDouble()
-    py = GRIT.VectorDouble()
+	
+    N = np.asanyarray(phase.get_vertices()).size
 
+    px = np.resize(np.array([]),N)
+    py = np.resize(np.array([]),N)
+	
     GRIT.get_sub_range_current(engine, phase, px, py)
 
-    N = px.size()
     dt = 0.01
     
-    px_new = GRIT.VectorDouble(px)
-    py_new = GRIT.VectorDouble(py)
+    px_new = np.array(px)
+    py_new = np.array(py)
     
     for i in range(0, N):
         x = px[i]
