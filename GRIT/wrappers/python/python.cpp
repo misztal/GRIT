@@ -1,5 +1,6 @@
 #include <configuration.h>
 
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
@@ -14,7 +15,39 @@
 PYBIND11_MAKE_OPAQUE(std::vector<double>);
 
 namespace py = pybind11;
-  
+
+typedef py::array_t<double, py::array::c_style | py::array::forcecast>  py_dense_array_double;
+
+namespace pygrit
+{
+  void get_sub_range_current(
+                             grit::engine2d_type     const & engine
+                             , glue::Phase           const & phase
+                             , py_dense_array_double       & x
+                             , py_dense_array_double       & y
+                             )
+  {
+    double * x_ptr = (double *) x.mutable_data();
+    double * y_ptr = (double *) y.mutable_data();
+
+    glue::get_sub_range_current( engine, phase, x_ptr, y_ptr );
+  }
+
+  void set_sub_range_target(
+                            grit::engine2d_type           & engine
+                            , glue::Phase           const & phase
+                            , py_dense_array_double const & x
+                            , py_dense_array_double const & y
+                            , bool                  const & using_partial_data = false
+                            )
+  {
+    double * x_ptr = (double *) x.data();
+    double * y_ptr = (double *) y.data();
+
+    glue::set_sub_range_target( engine, phase, x_ptr, y_ptr, using_partial_data );
+  }
+}
+
 PYBIND11_MODULE( pygrit, m ) 
 {
 
@@ -114,8 +147,8 @@ PYBIND11_MODULE( pygrit, m )
 
   //--- Binding STL containers
 
-  py::bind_vector<std::vector<double>>(m, "VectorDouble")
-    .def("size"  , &std::vector<double>::size);
+  //py::bind_vector<std::vector<double>>(m, "VectorDouble")
+  //  .def("size"  , &std::vector<double>::size);
 
   //--- Binding classes from util, grit and glue
 
@@ -176,7 +209,6 @@ PYBIND11_MODULE( pygrit, m )
 
 
   //--- Binding functions from util, grit and glue
-
   m.def("get_data_file_path"              , &util::get_data_file_path                                   );
   m.def("generate_filename"               , &util::generate_filename                                    );
   
@@ -191,8 +223,8 @@ PYBIND11_MODULE( pygrit, m )
                                           , py::arg("attribute_name_y") = "current"                     );
 
   m.def("make_phase"                      , (Phase (*)(engine2d_type const &, unsigned int const &)) &glue::make_phase );
-  m.def("get_sub_range_current"           , &glue::get_sub_range_current                                );
-  m.def("set_sub_range_target"            , &glue::set_sub_range_target                                 
+  m.def("get_sub_range_current"           , &pygrit::get_sub_range_current                              );
+  m.def("set_sub_range_target"            , &pygrit::set_sub_range_target                                 
                                           , py::arg("engine")
                                           , py::arg("phase")
                                           , py::arg("x")
