@@ -383,11 +383,12 @@ namespace glue
 
   }
 
-  // 2016-02-19 Kenny code review: Add proper documentation comments that at least explains the "special" argument using_partial_data
   /**
    * Sets target coordinates for sub range.
-   * Boolean argument using_partial_data should be true when x and y does not have data
-   * for every vertex with same label.
+   *
+   * @param using_partial_data        Boolean argument that is true when x and y
+   *                                  does not have data for every vertex with
+   *                                  same label.
    */
   inline void set_sub_range_target(
                                    grit::engine2d_type         & engine
@@ -477,8 +478,6 @@ namespace glue
                                    , bool                const & using_partial_data = false
                                    )
   {
-    typedef grit::default_grit_types::vector3_type V;
-
     if(phase.m_vertices.size() != x.size())
     {
       util::Log log;
