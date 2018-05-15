@@ -383,6 +383,11 @@ namespace glue
 
   }
 
+  
+  namespace details
+  {
+  
+  
   /**
    * Sets target coordinates for sub range.
    *
@@ -390,11 +395,12 @@ namespace glue
    *                                  does not have data for every vertex with
    *                                  same label.
    */
-  inline void set_sub_range_target(
+  template<typename any_array_type>
+  inline void set_sub_range_target_native(
                                    grit::engine2d_type         & engine
                                    , glue::Phase         const & phase
-                                   , double              const * x
-                                   , double              const * y
+                                   , any_array_type      const & x
+                                   , any_array_type      const & y
                                    , bool                const & using_partial_data = false
                                    )
   {
@@ -470,12 +476,26 @@ namespace glue
     }
   }
 
+  }// namespace details
+  
+  
+  template<typename container_type>
   inline void set_sub_range_target(
                                    grit::engine2d_type         & engine
                                    , glue::Phase         const & phase
+                                   , container_type      const & x
+                                   , container_type      const & y
+                                   , bool                const & using_partial_data = false
+                                   );
+  
+
+  template<>
+  inline void set_sub_range_target<std::vector<double> >(
+                                     grit::engine2d_type         & engine
+                                   , glue::Phase         const & phase
                                    , std::vector<double> const & x
                                    , std::vector<double> const & y
-                                   , bool                const & using_partial_data = false
+                                   , bool                const & using_partial_data
                                    )
   {
     if(phase.m_vertices.size() != x.size())
@@ -496,8 +516,26 @@ namespace glue
       throw std::invalid_argument("Vertices and y-values must be of same size");
     }
 
-    set_sub_range_target(engine, phase, x, y, using_partial_data);
+    details::set_sub_range_target_native(engine, phase, x, y, using_partial_data);
   }
+  
+  
+  template<>
+  inline void set_sub_range_target< double * >(  // replace with py::array type
+                                                         grit::engine2d_type         & engine
+                                                         , glue::Phase         const & phase
+                                                         , double * const & x
+                                                         , double * const & y
+                                                         , bool                const & using_partial_data
+                                                         )
+  {
+    // add py::array safety checks?
+    
+    details::set_sub_range_target_native(engine, phase, x, y, using_partial_data);
+  }
+  
+  
+  
 
   inline void set_sub_range_current(
                                     grit::engine2d_type                & engine
