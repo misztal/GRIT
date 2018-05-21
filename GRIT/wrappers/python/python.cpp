@@ -107,6 +107,10 @@ PYBIND11_MODULE( pygrit, m )
 
   using grit::param_type;
   using grit::engine2d_type;
+  using grit::SimplexSet;
+  using grit::LogicExpression;
+  using grit::InPhase;
+  using grit::default_grit_types;
 
   using util::ConfigFile;
 
@@ -139,20 +143,32 @@ PYBIND11_MODULE( pygrit, m )
     .def("clear"     , &ConfigFile::clear)
     .def("load"      , &ConfigFile::load, py::arg("filename"), py::arg("throw_on_errors") = true);
 
-  // 2018-04-23 Marek: just adding a couple of get/set functions to test if this thing works.
-  //                   Not sure if they'll be needed in the first release (as we should stick
-  //                   to reading the parameters from the cfg files), but it should be rather
-  //                   simple to add them later.
+  py::class_<default_grit_types::mesh_impl>(m, "Mesh")
+    .def(py::init<>());
+
   py::class_<param_type>(m, "Parameters")
-  .def(py::init([]() { return new param_type(); }) );
-    //.def("number_of_subdomains", (unsigned int const & (param_type::*)() const) &param_type::number_of_subdomains)
-    //.def("number_of_subdomains", (unsigned int & (param_type::*)()) &param_type::number_of_subdomains)
-    //.def("get_upper_threshold", &param_type::get_upper_threshold)
-    //.def("get_lower_threshold", &param_type::get_lower_threshold);
+  .def(py::init([]() { return new param_type(); }) )
+    .def("number_of_subdomains", (unsigned int const & (param_type::*)() const) &param_type::number_of_subdomains)
+    .def("number_of_subdomains", (unsigned int & (param_type::*)()) &param_type::number_of_subdomains)
+    .def("set_upper_threshold_attribute", &param_type::set_upper_threshold_attribute)
+    .def("set_lower_threshold_attribute", &param_type::set_lower_threshold_attribute);
 
   py::class_<engine2d_type>(m, "Engine2D")
     .def(py::init<>())
-    .def("update", &engine2d_type::update);
+    .def("update", &engine2d_type::update)
+    .def("mesh", (default_grit_types::mesh_impl const & (engine2d_type::*)() const) &engine2d_type::mesh)
+    .def("mesh", (default_grit_types::mesh_impl & (engine2d_type::*)()) &engine2d_type::mesh)
+    .def("create_attribute", [](engine2d_type & self, std::string const & name, unsigned int const dim) -> void
+       {
+         self.attributes().create_attribute( name, dim );
+       })
+    .def("get_all_simplices", [](engine2d_type & self) -> SimplexSet
+       {
+         return self.mesh().get_all_simplices();
+       });
+
+  py::class_<SimplexSet>(m, "SimplexSet")
+    .def(py::init<>());
 
   py::class_<Phase>(m, "Phase")
     .def(py::init<>())
@@ -177,9 +193,9 @@ PYBIND11_MODULE( pygrit, m )
 
        }, py::keep_alive<0, 1>());
 
-  py::class_<VERTEX_ATTRIBUTE>(m, "VERTEX_ATTRIBUTE");
-  py::class_<EDGE_ATTRIBUTE>(m, "EDGE_ATTRIBUTE");
-  py::class_<FACE_ATTRIBUTE>(m, "FACE_ATTRIBUTE");
+  py::class_<VERTEX_ATTRIBUTE>(m, "VERTEX_ATTRIBUTE").def(py::init<>());
+  py::class_<EDGE_ATTRIBUTE  >(m, "EDGE_ATTRIBUTE"  ).def(py::init<>());
+  py::class_<FACE_ATTRIBUTE  >(m, "FACE_ATTRIBUTE"  ).def(py::init<>());
 
   //--- Binding functions from util, grit and glue
   m.def("get_data_file_path"              , &util::get_data_file_path                                   );
@@ -187,7 +203,7 @@ PYBIND11_MODULE( pygrit, m )
   
   m.def("make_parameters_from_config_file", &grit::make_parameters_from_config_file                     );
   m.def("init_engine_with_mesh_file"      , &grit::init_engine_with_mesh_file<grit::default_grit_types> );
-
+  
   m.def("svg_draw"                        , &glue::svg_draw 
                                           , py::arg("filename")
                                           , py::arg("engine")
@@ -259,4 +275,24 @@ PYBIND11_MODULE( pygrit, m )
                                           , py::arg("y")
                                           , py::arg("using_partial_data") = false                       );
 
+  m.def("clear_attribute"                 , (void (*)(
+                                                      grit::engine2d_type       &
+                                                      , std::string       const & 
+                                                      , double            const &
+                                                      , VERTEX_ATTRIBUTE  const & 
+                                                      )) &glue::clear_attribute                         );
+
+  m.def("clear_attribute"                 , (void (*)(
+                                                      grit::engine2d_type       &
+                                                      , std::string       const & 
+                                                      , double            const &
+                                                      , EDGE_ATTRIBUTE    const & 
+                                                      )) &glue::clear_attribute                         );
+
+  m.def("clear_attribute"                 , (void (*)(
+                                                      grit::engine2d_type       &
+                                                      , std::string       const & 
+                                                      , double            const &
+                                                      , FACE_ATTRIBUTE    const & 
+                                                      )) &glue::clear_attribute                         );
 }

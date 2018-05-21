@@ -20,6 +20,8 @@ namespace glue
   struct EDGE_ATTRIBUTE {};
   struct FACE_ATTRIBUTE {};
 
+  // 2018-05-21 Marek: this function isn't used anywhere in the main branch
+  //                   and is it uses push_back, it's not very numpy friendly.
   /**
    * When one work on the whole mesh it can be usefull to be
    * able to lookup the labels of the triangles. This convenience
