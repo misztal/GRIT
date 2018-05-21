@@ -18,7 +18,7 @@ def do_simulation_step(engine, settings):
     px = np.resize(np.array([]),N)
     py = np.resize(np.array([]),N)
 	
-    GRIT.get_sub_range_current(engine, phase, int(N), px, py)
+    GRIT.get_sub_range_current(engine, phase, px, py)
 
     dt = 0.01
     
@@ -33,7 +33,7 @@ def do_simulation_step(engine, settings):
         px_new[i] = px[i] + u*dt
         py_new[i] = py[i] + v*dt
 
-    GRIT.set_sub_range_target(engine, phase, int(N), px_new, py_new)
+    GRIT.set_sub_range_target(engine, phase, px_new, py_new)
 
 
 def main():
