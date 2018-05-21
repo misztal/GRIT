@@ -19,6 +19,51 @@ PYBIND11_MAKE_OPAQUE(std::vector<double>);
 
 namespace py = pybind11;
 
+namespace pygrit
+{
+  grit::SimplexSet filter(
+                          grit::engine2d_type const & engine
+                          , grit::SimplexSet  const & A
+                          , char              const * module_name
+                          , char              const * name
+                          , py::object        const & info
+                          )
+  { 
+    py::object condition = py::module::import(module_name).attr(name);
+                                                
+    grit::SimplexSet result;
+
+    grit::SimplexSet::simplex0_const_iterator begin0 = A.begin0();
+    grit::SimplexSet::simplex0_const_iterator end0   = A.end0();
+
+    for (grit::SimplexSet::simplex0_const_iterator s0 = begin0; s0 != end0; ++s0)
+    {
+      if (py::bool_(condition(engine,*s0,info)))
+        result.insert(*s0);
+    }
+
+    grit::SimplexSet::simplex1_const_iterator begin1 = A.begin1();
+    grit::SimplexSet::simplex1_const_iterator end1   = A.end1();
+
+    for (grit::SimplexSet::simplex1_const_iterator s1 = begin1; s1 != end1; ++s1)
+    {
+      if (py::bool_(condition(engine,*s1,info)))
+        result.insert(*s1);
+    }
+
+    grit::SimplexSet::simplex2_const_iterator begin2 = A.begin2();
+    grit::SimplexSet::simplex2_const_iterator end2   = A.end2();
+
+    for (grit::SimplexSet::simplex2_const_iterator s2 = begin2; s2 != end2; ++s2)
+    {
+      if (py::bool_(condition(engine,*s2,info)))
+        result.insert(*s2);
+    }
+
+    return result;
+  }
+}
+
 PYBIND11_MODULE( pygrit, m ) 
 {
 
@@ -107,11 +152,11 @@ PYBIND11_MODULE( pygrit, m )
 
   using grit::param_type;
   using grit::engine2d_type;
+  using grit::Simplex0;
+  using grit::Simplex1;
+  using grit::Simplex2;
   using grit::SimplexSet;
-  using grit::LogicExpression;
-  using grit::InPhase;
-  using grit::default_grit_types;
-
+  
   using util::ConfigFile;
 
   using glue::Phase;
@@ -119,16 +164,10 @@ PYBIND11_MODULE( pygrit, m )
   using glue::EDGE_ATTRIBUTE;
   using glue::FACE_ATTRIBUTE;
 
-  //--- Binding STL containers
-
-  //py::bind_vector<std::vector<double>>(m, "VectorDouble")
-  //  .def("size"  , &std::vector<double>::size);
-
   //--- Binding classes from util, grit and glue
 
   py::class_<ConfigFile>(m, "ConfigFile")
     .def(py::init<>())
-    //.def("get_values", &ConfigFile::get_values)
     .def("get_value" , (std::string (ConfigFile::*)( std::string const &) const) &ConfigFile::get_value)
     .def("get_value" , (std::string (ConfigFile::*)( std::string const &
                                                    , std::string const &) const) &ConfigFile::get_value)
@@ -143,9 +182,6 @@ PYBIND11_MODULE( pygrit, m )
     .def("clear"     , &ConfigFile::clear)
     .def("load"      , &ConfigFile::load, py::arg("filename"), py::arg("throw_on_errors") = true);
 
-  py::class_<default_grit_types::mesh_impl>(m, "Mesh")
-    .def(py::init<>());
-
   py::class_<param_type>(m, "Parameters")
   .def(py::init([]() { return new param_type(); }) )
     .def("number_of_subdomains", (unsigned int const & (param_type::*)() const) &param_type::number_of_subdomains)
@@ -156,8 +192,8 @@ PYBIND11_MODULE( pygrit, m )
   py::class_<engine2d_type>(m, "Engine2D")
     .def(py::init<>())
     .def("update", &engine2d_type::update)
-    .def("mesh", (default_grit_types::mesh_impl const & (engine2d_type::*)() const) &engine2d_type::mesh)
-    .def("mesh", (default_grit_types::mesh_impl & (engine2d_type::*)()) &engine2d_type::mesh)
+    //.def("mesh", (default_grit_types::mesh_impl const & (engine2d_type::*)() const) &engine2d_type::mesh)
+    //.def("mesh", (default_grit_types::mesh_impl & (engine2d_type::*)()) &engine2d_type::mesh)
     .def("create_attribute", [](engine2d_type & self, std::string const & name, unsigned int const dim) -> void
        {
          self.attributes().create_attribute( name, dim );
@@ -165,9 +201,52 @@ PYBIND11_MODULE( pygrit, m )
     .def("get_all_simplices", [](engine2d_type & self) -> SimplexSet
        {
          return self.mesh().get_all_simplices();
-       });
+       })
+    .def("in_phase", [](engine2d_type const & self, unsigned int const & label, Simplex0 const & simplex) -> bool
+       {
+         return grit::InPhase( self.mesh(), label )(simplex); 
+       })
+    .def("in_phase", [](engine2d_type const & self, unsigned int const & label, Simplex1 const & simplex) -> bool
+       {
+         return grit::InPhase( self.mesh(), label )(simplex); 
+       })
+    .def("in_phase", [](engine2d_type const & self, unsigned int const & label, Simplex2 const & simplex) -> bool
+       {
+         return grit::InPhase(self.mesh(), label)(simplex); 
+       })
+    .def("is_dimension", [](engine2d_type const & self, unsigned int const & dim, Simplex0 const & simplex) -> bool
+       {
+         return (dim==0u);
+       })
+    .def("is_dimension", [](engine2d_type const & self, unsigned int const & dim, Simplex1 const & simplex) -> bool
+       {
+         return (dim==1u);
+       })
+    .def("is_dimension", [](engine2d_type const & self, unsigned int const & dim, Simplex2 const & simplex) -> bool
+       {
+         return (dim==2u);
+       })
+    .def("filter", [](
+                      engine2d_type const & self
+                      , SimplexSet  const & A
+                      , char        const * module_name
+                      , char        const * condition_name
+                      , py::object  const & info 
+                      ) -> SimplexSet
+       { 
+         return pygrit::filter(self, A, module_name, condition_name, info);
+       }, py::keep_alive<0, 1>());
 
   py::class_<SimplexSet>(m, "SimplexSet")
+    .def(py::init<>());
+
+  py::class_<Simplex0>(m, "Simplex0")
+    .def(py::init<>());
+
+  py::class_<Simplex1>(m, "Simplex1")
+    .def(py::init<>());
+
+  py::class_<Simplex2>(m, "Simplex2")
     .def(py::init<>());
 
   py::class_<Phase>(m, "Phase")
@@ -179,6 +258,16 @@ PYBIND11_MODULE( pygrit, m )
                         , sizeof(grit::Simplex0)     // Number of bytes for 1 Simplex0 type
                         , std::string("@L")       // 1 unsigned long
                         , self.m_vertices.size()   // Number of vertices
+                        );
+
+       }, py::keep_alive<0, 1>())
+    .def("get_edges", [](glue::Phase & self) -> BufData
+       {
+         return BufData(
+                        const_cast<glue::Tuple*>(self.m_edges.data())  //Raw pointer to edges
+                        , sizeof(glue::Tuple)     // Number of bytes for one Tuple type
+                        , std::string("@II")       // 2 unsigned ints
+                        , self.m_edges.size()   // Number of triangles
                         );
 
        }, py::keep_alive<0, 1>())
@@ -203,7 +292,7 @@ PYBIND11_MODULE( pygrit, m )
   
   m.def("make_parameters_from_config_file", &grit::make_parameters_from_config_file                     );
   m.def("init_engine_with_mesh_file"      , &grit::init_engine_with_mesh_file<grit::default_grit_types> );
-  
+
   m.def("svg_draw"                        , &glue::svg_draw 
                                           , py::arg("filename")
                                           , py::arg("engine")
@@ -214,6 +303,11 @@ PYBIND11_MODULE( pygrit, m )
   m.def("make_phase"                      , (Phase (*)(
                                                        engine2d_type  const &
                                                        , unsigned int const &
+                                                       )) &glue::make_phase                             );
+
+  m.def("make_phase"                      , (Phase (*)(
+                                                       engine2d_type  const &
+                                                       , SimplexSet   const &
                                                        )) &glue::make_phase                             );
 
   m.def("get_sub_range"                   , (void (*)(

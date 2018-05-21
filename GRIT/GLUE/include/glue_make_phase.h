@@ -9,7 +9,8 @@
 
 namespace glue
 {
-
+  // 2018-05-21 Marek: The domain has to be closed for this code to work as it should
+  //                   On non-closed simplex sets it can cause a crash.
   /**
    * Make a phase object.
    * This function extracts mesh information from GRIT and creates a phase object
@@ -27,6 +28,8 @@ namespace glue
                           )
   {
     Phase phase;
+
+    util::Log log;
 
     //--- Get iterators  -------------------------------------------------------
     grit::SimplexSet::simplex2_const_iterator tri_begin  = domain.begin2();
@@ -62,7 +65,7 @@ namespace glue
 
         edge.i = phase.get_local_index(s.get_idx0());
         edge.j = phase.get_local_index(s.get_idx1());
-
+        
         assert( engine.mesh().is_valid_simplex( s.get_simplex0_idx0() ) || !"make_phase(): vertex invalid");
         assert( engine.mesh().is_valid_simplex( s.get_simplex0_idx1() ) || !"make_phase(): vertex invalid");
 
