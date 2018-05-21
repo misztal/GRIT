@@ -25,7 +25,7 @@ namespace glue
    * able to lookup the labels of the triangles. This convenience
    * function extracts this label data.
    */
-  inline void get_labels(
+  /*inline void get_labels(
                          grit::engine2d_type const & engine
                          , std::vector<unsigned int> & labels
                          )
@@ -47,7 +47,7 @@ namespace glue
         labels.push_back( engine.mesh().label(s) );
       }
     }
-  }
+  }*/
   
   namespace details
   {
