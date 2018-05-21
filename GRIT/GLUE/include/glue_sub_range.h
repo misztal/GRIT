@@ -215,46 +215,6 @@ namespace glue
     }
   }
 
-  inline void get_sub_range_current(
-                                    grit::engine2d_type  const & engine
-                                    , glue::Phase        const & phase
-                                    , double                   * x
-                                    , double                   * y
-                                    )
-  {
-    typedef grit::default_grit_types::vector3_type V;
-
-    unsigned int const N = phase.m_vertices.size();
-
-    for(unsigned int i = 0; i < N; ++i)
-    {
-      grit::Simplex0 const & s = phase.m_vertices[i];
-
-      V const & p = engine.attributes().get_current_value(s);
-
-      x[i] = p(0);
-      y[i] = p(1);
-    }
-  }
-
-  inline void get_sub_range_current(
-                                    grit::engine2d_type  const & engine
-                                    , glue::Phase        const & phase
-                                    , std::vector<double>      & x
-                                    , std::vector<double>      & y
-                                    )
-  {
-    unsigned int const N = phase.m_vertices.size();
-
-    x.clear();
-    x.resize(N,0.0);
-
-    y.clear();
-    y.resize(N,0.0);
-
-    get_sub_range_current( engine, phase, x.data(), y.data());
-  }
-
   /**
    * Set sub range.
    * This function is the symmetric counter part of the
@@ -386,99 +346,153 @@ namespace glue
   
   namespace details
   {
-  
-  
-  /**
-   * Sets target coordinates for sub range.
-   *
-   * @param using_partial_data        Boolean argument that is true when x and y
-   *                                  does not have data for every vertex with
-   *                                  same label.
-   */
-  template<typename any_array_type>
-  inline void set_sub_range_target_native(
-                                   grit::engine2d_type         & engine
-                                   , glue::Phase         const & phase
-                                   , any_array_type      const & x
-                                   , any_array_type      const & y
-                                   , bool                const & using_partial_data = false
-                                   )
-  {
-    typedef grit::default_grit_types::vector3_type V;
-
-    if(phase.m_labels.size()!=1u)
+    /**
+     * Gets current coordinates of the vertices in @param phase.
+     */
+    template<typename any_array_type>
+    inline void get_sub_range_current_native(
+                                             grit::engine2d_type  const & engine
+                                             , glue::Phase        const & phase
+                                             , any_array_type           & x
+                                             , any_array_type           & y
+                                             )
     {
-      util::Log log;
+      typedef grit::default_grit_types::vector3_type V;
 
-      log << "set_sub_range_target() Invalid argument labels must have size one" << util::Log::newline();
-
-      throw std::invalid_argument("trying to get sub range from non-existing vertex attribute");
-    }
-
-    bool override_partial_data_flag = false;
-    if(phase.m_triangles.empty() && !phase.m_edges.empty() && !using_partial_data)
-    {
-      util::Log log;
-
-      log << "set_sub_range_target(): Your phase obejct suggest you are setting partial data of the phase overriding using_partial_data flag."
-          << util::Log::newline();
-
-      override_partial_data_flag = true;
-    }
-
-    // In the case where the user has only sepcified target values for some vertices with given label
-    if(override_partial_data_flag || using_partial_data)
-    {
-      unsigned int const phase_label = phase.m_labels[0];
-
-      glue::Phase entire_phase = glue::make_phase( engine, phase_label);
-
-      // Default target value is current
-      std::vector<double> target_x;
-      std::vector<double> target_y;
-      glue::get_sub_range_current( engine, entire_phase, target_x, target_y);
-
-      // Setting target values to the ones speified by x and y from function input
-      unsigned int const M = phase.m_vertices.size();
-      for(unsigned int i = 0; i < M; ++i)
-      {
-        grit::Simplex0 const & s = phase.m_vertices[i];
-        unsigned int local_idx = entire_phase.get_local_index(s);
-
-        target_x[local_idx] = x[i];
-        target_y[local_idx] = y[i];
-      }
-
-      // Update target values in engine
-      unsigned int const N = entire_phase.m_vertices.size();
-      for(unsigned int i = 0; i < N; ++i)
-      {
-        grit::Simplex0 const & s = entire_phase.m_vertices[i];
-
-        V const p = V(target_x[i], target_y[i], 0.0);
-
-        engine.attributes().set_target_value( s, phase_label, p);
-      }
-
-    }
-    else // when all target values are specified - all is good
-    {
-      // Update target values in engine
       unsigned int const N = phase.m_vertices.size();
+
       for(unsigned int i = 0; i < N; ++i)
       {
         grit::Simplex0 const & s = phase.m_vertices[i];
 
-        V const p = V(x[i], y[i], 0.0);
+        V const & p = engine.attributes().get_current_value(s);
 
-        engine.attributes().set_target_value( s, phase.m_labels[0], p);
+        x[i] = p(0);
+        y[i] = p(1);
       }
     }
-  }
+  
+    /**
+     * Sets target coordinates for sub range.
+     *
+     * @param using_partial_data        Boolean argument that is true when x and y
+     *                                  does not have data for every vertex with
+     *                                  same label.
+     */
+    template<typename any_array_type>
+    inline void set_sub_range_target_native(
+                                            grit::engine2d_type         & engine
+                                            , glue::Phase         const & phase
+                                            , any_array_type      const & x
+                                            , any_array_type      const & y
+                                            , bool                const & using_partial_data = false
+                                            )
+    {
+      typedef grit::default_grit_types::vector3_type V;
+
+      if(phase.m_labels.size()!=1u)
+      {
+        util::Log log;
+
+        log << "set_sub_range_target() Invalid argument labels must have size one" << util::Log::newline();
+         
+        throw std::invalid_argument("trying to get sub range from non-existing vertex attribute");
+      }
+
+      bool override_partial_data_flag = false;
+      if(phase.m_triangles.empty() && !phase.m_edges.empty() && !using_partial_data)
+      {
+        util::Log log;
+
+        log << "set_sub_range_target(): Your phase object suggest you are setting partial data of the phase overriding using_partial_data flag."
+            << util::Log::newline();
+
+        override_partial_data_flag = true;
+      }
+
+      // In case where the user has only specified target values for some vertices with given label
+      if(override_partial_data_flag || using_partial_data)
+      {
+        unsigned int const phase_label = phase.m_labels[0];
+
+        glue::Phase entire_phase = glue::make_phase( engine, phase_label);
+
+        // Default target value is current
+        std::vector<double> target_x;
+        std::vector<double> target_y;
+        glue::get_sub_range_current( engine, entire_phase, target_x, target_y);
+
+        // Setting target values to the ones speified by x and y from function input
+        unsigned int const M = phase.m_vertices.size();
+        for(unsigned int i = 0; i < M; ++i)
+        {
+          grit::Simplex0 const & s = phase.m_vertices[i];
+          unsigned int local_idx = entire_phase.get_local_index(s);
+
+          target_x[local_idx] = x[i];
+          target_y[local_idx] = y[i];
+        }
+
+        // Update target values in engine
+        unsigned int const N = entire_phase.m_vertices.size();
+        for(unsigned int i = 0; i < N; ++i)
+        {
+          grit::Simplex0 const & s = entire_phase.m_vertices[i];
+
+          V const p = V(target_x[i], target_y[i], 0.0);
+
+          engine.attributes().set_target_value( s, phase_label, p);
+        }
+
+      }
+      else // when all target values are specified - all is good
+      {
+        // Update target values in engine
+        unsigned int const N = phase.m_vertices.size();
+        for(unsigned int i = 0; i < N; ++i)
+        {
+          grit::Simplex0 const & s = phase.m_vertices[i];
+
+          V const p = V(x[i], y[i], 0.0);
+
+          engine.attributes().set_target_value( s, phase.m_labels[0], p);
+        }
+      }
+    }
 
   }// namespace details
   
   
+  template<typename container_type>
+  inline void get_sub_range_current(
+                                    grit::engine2d_type const & engine
+                                    , glue::Phase       const & phase
+                                    , container_type          & x
+                                    , container_type          & y
+                                    )
+  {
+    details::get_sub_range_current_native( engine, phase, x, y );
+  }
+
+  template<>
+  inline void get_sub_range_current<std::vector<double> >(
+                                                          grit::engine2d_type   const & engine
+                                                          , glue::Phase         const & phase
+                                                          , std::vector<double>       & x
+                                                          , std::vector<double>       & y
+                                                          )
+  {
+    unsigned int const N = phase.m_vertices.size();
+
+    x.clear();
+    x.resize(N,0.0);
+
+    y.clear();
+    y.resize(N,0.0);
+
+    details::get_sub_range_current_native( engine, phase, x, y );
+  }
+
   template<typename container_type>
   inline void set_sub_range_target(
                                    grit::engine2d_type         & engine
@@ -486,17 +500,19 @@ namespace glue
                                    , container_type      const & x
                                    , container_type      const & y
                                    , bool                const & using_partial_data = false
-                                   );
+                                   )
+  {
+    details::set_sub_range_target_native( engine, phase, x, y, using_partial_data );
+  }
   
-
   template<>
   inline void set_sub_range_target<std::vector<double> >(
-                                     grit::engine2d_type         & engine
-                                   , glue::Phase         const & phase
-                                   , std::vector<double> const & x
-                                   , std::vector<double> const & y
-                                   , bool                const & using_partial_data
-                                   )
+                                                         grit::engine2d_type         & engine
+                                                         , glue::Phase         const & phase
+                                                         , std::vector<double> const & x
+                                                         , std::vector<double> const & y
+                                                         , bool                const & using_partial_data
+                                                         )
   {
     if(phase.m_vertices.size() != x.size())
     {
@@ -518,23 +534,6 @@ namespace glue
 
     details::set_sub_range_target_native(engine, phase, x, y, using_partial_data);
   }
-  
-  
-  template<>
-  inline void set_sub_range_target< double * >(  // replace with py::array type
-                                                         grit::engine2d_type         & engine
-                                                         , glue::Phase         const & phase
-                                                         , double * const & x
-                                                         , double * const & y
-                                                         , bool                const & using_partial_data
-                                                         )
-  {
-    // add py::array safety checks?
-    
-    details::set_sub_range_target_native(engine, phase, x, y, using_partial_data);
-  }
-  
-  
   
 
   inline void set_sub_range_current(
@@ -576,7 +575,7 @@ namespace glue
     }
   }
 
-}// end namesapce glue
+}// end namespace glue
 
 // GLUE_SUB_RANGE_H
 #endif
