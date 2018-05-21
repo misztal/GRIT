@@ -9,52 +9,15 @@
 #include <glue.h>
 #include <util.h>
 
+#include "pygrit_sub_range.h"
+#include "pygrit_types.h"
+
 #include <memory>
 
 //--- This is needed to use STL containers in Python
 PYBIND11_MAKE_OPAQUE(std::vector<double>);
 
 namespace py = pybind11;
-
-typedef py::array_t<double, py::array::c_style | py::array::forcecast>  py_dense_array_double;
-
-namespace pygrit
-{
-  void get_sub_range_current(
-                             grit::engine2d_type     const & engine
-                             , glue::Phase           const & phase
-                             , py_dense_array_double       & x
-                             , py_dense_array_double       & y
-                             )
-  {
-    if( phase.m_vertices.size() != x.size() )
-    {
-      util::Log log;
-      log << "get_sub_range_target(): The number of vertices must be equal to the size of x array" << util::Log::newline();
-      throw std::invalid_argument("Vertices and x-values must be of same size");
-    }
-    
-    if( phase.m_vertices.size() != y.size() )
-    {
-      util::Log log;
-      log << "get_sub_range_target(): The number of vertices must be equal to the size of y array" << util::Log::newline();
-      throw std::invalid_argument("Vertices and y-values must be of same size");
-    }
-
-    glue::get_sub_range_current( engine, phase, x, y );
-  }
-
-  void set_sub_range_target(
-                            grit::engine2d_type           & engine
-                            , glue::Phase           const & phase
-                            , py_dense_array_double const & x
-                            , py_dense_array_double const & y
-                            , bool                  const & using_partial_data = false
-                            )
-  {
-    glue::set_sub_range_target( engine, phase, x, y, using_partial_data );
-  }
-} // namespace pygrit
 
 PYBIND11_MODULE( pygrit, m ) 
 {
@@ -142,16 +105,15 @@ PYBIND11_MODULE( pygrit, m )
                                                  self._strides); }
                         );
 
-
-
-
-
   using grit::param_type;
   using grit::engine2d_type;
 
   using util::ConfigFile;
 
   using glue::Phase;
+  using glue::VERTEX_ATTRIBUTE;
+  using glue::EDGE_ATTRIBUTE;
+  using glue::FACE_ATTRIBUTE;
 
   //--- Binding STL containers
 
@@ -215,9 +177,9 @@ PYBIND11_MODULE( pygrit, m )
 
        }, py::keep_alive<0, 1>());
 
-  py::class_<glue::VERTEX_ATTRIBUTE>(m, "VERTEX_ATTRIBUTE");
-  py::class_<glue::EDGE_ATTRIBUTE>(m, "EDGE_ATTRIBUTE");
-  py::class_<glue::FACE_ATTRIBUTE>(m, "FACE_ATTRIBUTE");
+  py::class_<VERTEX_ATTRIBUTE>(m, "VERTEX_ATTRIBUTE");
+  py::class_<EDGE_ATTRIBUTE>(m, "EDGE_ATTRIBUTE");
+  py::class_<FACE_ATTRIBUTE>(m, "FACE_ATTRIBUTE");
 
   //--- Binding functions from util, grit and glue
   m.def("get_data_file_path"              , &util::get_data_file_path                                   );
@@ -233,14 +195,68 @@ PYBIND11_MODULE( pygrit, m )
                                           , py::arg("attribute_name_x") = "current"
                                           , py::arg("attribute_name_y") = "current"                     );
 
-  m.def("make_phase"                      , (Phase (*)(engine2d_type const &, unsigned int const &)) &glue::make_phase );
+  m.def("make_phase"                      , (Phase (*)(
+                                                       engine2d_type  const &
+                                                       , unsigned int const &
+                                                       )) &glue::make_phase                             );
+
+  m.def("get_sub_range"                   , (void (*)(
+                                                      engine2d_type                   const &
+                                                      , Phase                         const &
+                                                      , std::string                   const &
+                                                      , pygrit::py_dense_array_double       &
+                                                      , VERTEX_ATTRIBUTE              const &
+                                                      )) &pygrit::get_sub_range                         );
+
+  m.def("get_sub_range"                   , (void (*)(
+                                                      engine2d_type                   const &
+                                                      , Phase                         const &
+                                                      , std::string                   const &
+                                                      , pygrit::py_dense_array_double       &
+                                                      , EDGE_ATTRIBUTE                const &
+                                                      )) &pygrit::get_sub_range                         );
+
+  m.def("get_sub_range"                   , (void (*)(
+                                                      engine2d_type                   const &
+                                                      , Phase                         const &
+                                                      , std::string                   const &
+                                                      , pygrit::py_dense_array_double       &
+                                                      , FACE_ATTRIBUTE                const &
+                                                      )) &pygrit::get_sub_range                         );
+
   m.def("get_sub_range_current"           , &pygrit::get_sub_range_current                              );
+  m.def("get_sub_range_target"            , &pygrit::get_sub_range_target                               );
+
+  m.def("set_sub_range"                   , (void (*)(
+                                                      engine2d_type                         &
+                                                      , Phase                         const &
+                                                      , std::string                   const &
+                                                      , pygrit::py_dense_array_double const &
+                                                      , VERTEX_ATTRIBUTE              const &
+                                                      )) &pygrit::set_sub_range                         );
+
+  m.def("set_sub_range"                   , (void (*)(
+                                                      engine2d_type                         &
+                                                      , Phase                         const &
+                                                      , std::string                   const &
+                                                      , pygrit::py_dense_array_double const &
+                                                      , EDGE_ATTRIBUTE                const &
+                                                      )) &pygrit::set_sub_range                         );
+  
+  m.def("set_sub_range"                   , (void (*)(
+                                                      engine2d_type                         &
+                                                      , Phase                         const &
+                                                      , std::string                   const &
+                                                      , pygrit::py_dense_array_double const &
+                                                      , FACE_ATTRIBUTE                const &
+                                                      )) &pygrit::set_sub_range                         );
+
+  m.def("set_sub_range_current"           , &pygrit::set_sub_range_current                              );
   m.def("set_sub_range_target"            , &pygrit::set_sub_range_target  
                                           , py::arg("engine")
                                           , py::arg("phase")
                                           , py::arg("x")
                                           , py::arg("y")
                                           , py::arg("using_partial_data") = false                       );
-
 
 }

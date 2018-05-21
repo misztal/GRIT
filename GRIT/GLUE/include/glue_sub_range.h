@@ -48,253 +48,10 @@ namespace glue
       }
     }
   }
-
-  /**
-   * This version extract attribute values from edges (simplex1's).
-   */
-  inline void get_sub_range(
-                            grit::engine2d_type            const & engine
-                            , glue::Phase                  const & phase
-                            , std::string                  const & name
-                            , std::vector<double>                & values
-                            , EDGE_ATTRIBUTE               const & /*tag*/
-  )
+  
+  namespace details
   {
-    if(! engine.attributes().exist_attribute(name, 1u) )
-    {
-      util::Log log;
-
-      log << "get_sub_range() Edge attribute " << name << " did not exist" << util::Log::newline();
-
-      throw std::logic_error("trying to get sub range from non-existing edge attribute");
-    }
-
-    unsigned int const N = phase.m_edges.size();
-
-    values.clear();
-    values.resize(N, 0.0);
-
-    for(unsigned int t = 0u; t < N; ++t)
-    {
-      unsigned int    const & i  = phase.m_edges[t].i;
-      unsigned int    const & j  = phase.m_edges[t].j;
-
-      grit::Simplex0 const & v0 = phase.m_vertices[i];
-      grit::Simplex0 const & v1 = phase.m_vertices[j];
-
-      grit::Simplex1 const & s = grit::make_simplex1(v0, v1);
-
-      values[t] = engine.attributes().get_attribute_value(name, s);
-    }
-  }
-
-  /**
-   * This version extract attribute values from triangles (simplex2's).
-   */
-  inline void get_sub_range(
-                            grit::engine2d_type            const &  engine
-                            , glue::Phase                  const & phase
-                            , std::string                  const & name
-                            , std::vector<double>                & values
-                            , FACE_ATTRIBUTE               const & /*tag*/
-                            )
-  {
-    if(! engine.attributes().exist_attribute(name, 2u) )
-    {
-      util::Log log;
-
-      log << "get_sub_range() Face attribute " << name << " did not exist" << util::Log::newline();
-
-      throw std::logic_error("trying to get sub range from non-existing face attribute");
-    }
-
-    unsigned int const N = phase.m_triangles.size();
-
-    values.clear();
-    values.resize(N,0.0);
-
-    for(unsigned int t = 0; t < N; ++t)
-    {
-      unsigned int    const & i  = phase.m_triangles[t].i;
-      unsigned int    const & j  = phase.m_triangles[t].j;
-      unsigned int    const & k  = phase.m_triangles[t].k;
-
-      grit::Simplex0 const & v0 = phase.m_vertices[i];
-      grit::Simplex0 const & v1 = phase.m_vertices[j];
-      grit::Simplex0 const & v2 = phase.m_vertices[k];
-
-      grit::Simplex2 const & s = grit::make_simplex2(v0, v1, v2);
-
-      values[t] = engine.attributes().get_attribute_value(name, s);
-    }
-  }
-
-  inline void get_sub_range_target(
-                                   grit::engine2d_type            const & engine
-                                   , glue::Phase                  const & phase
-                                   , std::vector<double>                & x
-                                   , std::vector<double>                & y
-                                   )
-  {
-    typedef grit::default_grit_types::vector3_type V;
-
-    if(phase.m_labels.size()!=1u)
-    {
-      util::Log log;
-
-      log << "get_sub_range_target() Invalid argument phase has multiple labels" << util::Log::newline();
-
-      throw std::invalid_argument("trying to get sub range from non-existing vertex attribute");
-    }
-
-    unsigned int const N = phase.m_vertices.size();
-
-    x.clear();
-    x.resize(N,0.0);
-
-    y.clear();
-    y.resize(N,0.0);
-
-    for(unsigned int i = 0; i < N; ++i)
-    {
-      grit::Simplex0 const & s = phase.m_vertices[i];
-
-      V const & p = engine.attributes().get_target_value( s, phase.m_labels[0] );
-
-      x[i] = p(0);
-      y[i] = p(1);
-    }
-  }
-
-  /**
-   * Set sub range.
-   * This function is the symmetric counter part of the
-   * correspoding glue::get_sub_range() function.
-   */
-  inline void set_sub_range(
-                            grit::engine2d_type                  & engine
-                            , glue::Phase                  const & phase
-                            , std::string                  const & name
-                            , std::vector<double>          const & values
-                            , VERTEX_ATTRIBUTE             const & /*tag*/
-                            )
-
-  {
-    if(! engine.attributes().exist_attribute(name, 0u) )
-    {
-      util::Log log;
-
-      log << "set_sub_range():  Vertex attribute " << name << " did not exist" << util::Log::newline();
-
-      throw std::logic_error("trying to set sub range from non-existing vertex attribute");
-    }
-
-    if(phase.m_labels.size()!=1u)
-    {
-      util::Log log;
-
-      log << "set_sub_range() Invalid argument phase has multiple labels" << util::Log::newline();
-
-      throw std::invalid_argument("trying to get sub range from non-existing vertex attribute");
-    }
-
-    if(phase.m_vertices.size() != values.size())
-    {
-      util::Log log;
-
-      log << "set_sub_range():  the number of vertices must be equal to the number of values" << util::Log::newline();
-
-      throw std::invalid_argument("vertices and values must be of same size");
-    }
-
-
-    unsigned int const N = phase.m_vertices.size();
-
-    for(unsigned int i = 0; i < N; ++i)
-    {
-      grit::Simplex0 const & s = phase.m_vertices[i];
-
-      engine.attributes().set_attribute_value(name, s, phase.m_labels[0], values[i]);
-    }
-  }
-
-  /**
-   * This version sets attribute values for edges (simplex1's).
-   */
-  inline void set_sub_range(
-                            grit::engine2d_type                  & engine
-                            , glue::Phase                  const & phase
-                            , std::string                  const & name
-                            , std::vector<double>          const & values
-                            , EDGE_ATTRIBUTE               const & /*tag*/
-  )
-  {
-    if(phase.m_edges.size() != values.size())
-    {
-      util::Log log;
-
-      log << "set_sub_range():  the number of edges must be equal to the number of values" << util::Log::newline();
-
-      throw std::invalid_argument("edges and values must be of same size");
-    }
-
-    unsigned int const N = phase.m_edges.size();
-
-    for(unsigned int t = 0u; t < N; ++t)
-    {
-      unsigned int    const & i  = phase.m_edges[t].i;  // Local space indices
-      unsigned int    const & j  = phase.m_edges[t].j;
-
-      grit::Simplex0 const & v0 = phase.m_vertices[i];
-      grit::Simplex0 const & v1 = phase.m_vertices[j];
-
-      grit::Simplex1 const & s = grit::make_simplex1(v0, v1);
-
-      engine.attributes().set_attribute_value(name, s, values[t]);
-    }
-
-  }
-
-  /**
-   * This version sets attribute values for triangles (simplex2's).
-   */
-  inline void set_sub_range(
-                            grit::engine2d_type                  & engine
-                            , glue::Phase                  const & phase
-                            , std::string                  const & name
-                            , std::vector<double>          const & values
-                            , FACE_ATTRIBUTE               const & /*tag*/
-                            )
-  {
-    if(phase.m_triangles.size() != values.size())
-    {
-      util::Log log;
-
-      log << "set_sub_range():  the number of triangles must be equal to the number of values" << util::Log::newline();
-
-      throw std::invalid_argument("triangles and values must be of same size");
-    }
-
-    unsigned int const N = phase.m_triangles.size();
-
-    for(unsigned int t = 0; t < N; ++t)
-    {
-      unsigned int    const & i  = phase.m_triangles[t].i;  // Local space indices
-      unsigned int    const & j  = phase.m_triangles[t].j;
-      unsigned int    const & k  = phase.m_triangles[t].k;
-
-      grit::Simplex0 const & v0 = phase.m_vertices[i];
-      grit::Simplex0 const & v1 = phase.m_vertices[j];
-      grit::Simplex0 const & v2 = phase.m_vertices[k];
-
-      grit::Simplex2 const & s = grit::make_simplex2(v0, v1, v2);
-
-      engine.attributes().set_attribute_value(name, s, values[t]);
-    }
-
-  }
-
-  /**
+    /**
      * Get sub range of values from mesh engine.
      * Given a set of vertcies from a phase extract their attribute values into a array.
      *
@@ -303,32 +60,34 @@ namespace glue
      * @param name      The string value containing the attribute name.
      * @param values    Upon return this argument holds the values of the range of vertices.
      */
-    inline void get_sub_range(
-                              grit::engine2d_type            const & engine
-                              , glue::Phase                  const & phase
-                              , std::string                  const & name
-                              , std::vector<double>                & values
-                              , VERTEX_ATTRIBUTE             const & /*tag*/
-                              )
+    template<typename any_container_type>
+    inline void get_sub_range_native(
+                                     grit::engine2d_type  const & engine
+                                     , glue::Phase        const & phase
+                                     , std::string        const & name
+                                     , any_container_type       & values
+                                     , VERTEX_ATTRIBUTE   const & /*tag*/
+                                     )
     {
       if(phase.m_labels.size()!=1u)
       {
         util::Log log;
+
         log << "get_sub_range() Invalid argument phase has multiple labels" << util::Log::newline();
+        
         throw std::invalid_argument("trying to get sub range from non-existing vertex attribute");
       }
 
-      if(! engine.attributes().exist_attribute(name, 0u) )
+      if(!engine.attributes().exist_attribute(name, 0u) )
       {
         util::Log log;
+        
         log << "get_sub_range() Vertex attribute " << name << " did not exist" << util::Log::newline();
+        
         throw std::logic_error("trying to get sub range from non-existing vertex attribute");
       }
 
       unsigned int const N = phase.m_vertices.size();
-
-      values.clear();
-      values.resize(N,0.0);
 
       for(unsigned int i = 0; i < N; ++i)
       {
@@ -338,20 +97,91 @@ namespace glue
       }
     }
 
-  
-  namespace details
-  {
-    
+    /**
+     * This version extract attribute values from edges (simplex1's).
+     */
+    template<typename any_container_type>
+    inline void get_sub_range_native(
+                                     grit::engine2d_type  const & engine
+                                     , glue::Phase        const & phase
+                                     , std::string        const & name
+                                     , any_container_type       & values
+                                     , EDGE_ATTRIBUTE     const & /*tag*/
+                                     )
+    {
+      if(! engine.attributes().exist_attribute(name, 1u) )
+      {
+        util::Log log;
+
+        log << "get_sub_range() Edge attribute " << name << " did not exist" << util::Log::newline();
+
+        throw std::logic_error("trying to get sub range from non-existing edge attribute");
+      }
+
+      unsigned int const N = phase.m_edges.size();
+
+      for(unsigned int t = 0u; t < N; ++t)
+      {
+        unsigned int    const & i  = phase.m_edges[t].i;
+        unsigned int    const & j  = phase.m_edges[t].j;
+
+        grit::Simplex0 const & v0 = phase.m_vertices[i];
+        grit::Simplex0 const & v1 = phase.m_vertices[j];
+
+        grit::Simplex1 const & s = grit::make_simplex1(v0, v1);
+
+        values[t] = engine.attributes().get_attribute_value(name, s);
+      }
+    }
+
+    /**
+     * This version extract attribute values from triangles (simplex2's).
+     */
+    template<typename any_container_type>
+    inline void get_sub_range_native(
+                                     grit::engine2d_type   const & engine
+                                     , glue::Phase         const & phase
+                                     , std::string         const & name
+                                     , any_container_type        & values
+                                     , FACE_ATTRIBUTE      const & /*tag*/
+                                     )
+    {
+      if(! engine.attributes().exist_attribute(name, 2u) )
+      {
+        util::Log log;
+
+        log << "get_sub_range() Face attribute " << name << " did not exist" << util::Log::newline();
+
+        throw std::logic_error("trying to get sub range from non-existing face attribute");
+      }
+
+      unsigned int const N = phase.m_triangles.size();
+
+      for(unsigned int t = 0; t < N; ++t)
+      {
+        unsigned int   const & i  = phase.m_triangles[t].i;
+        unsigned int   const & j  = phase.m_triangles[t].j;
+        unsigned int   const & k  = phase.m_triangles[t].k;
+
+        grit::Simplex0 const & v0 = phase.m_vertices[i];
+        grit::Simplex0 const & v1 = phase.m_vertices[j];
+        grit::Simplex0 const & v2 = phase.m_vertices[k];
+
+        grit::Simplex2 const & s = grit::make_simplex2(v0, v1, v2);
+
+        values[t] = engine.attributes().get_attribute_value(name, s);
+      }
+    }
 
     /**
      * Gets current coordinates of the vertices in @param phase.
      */
-    template<typename any_array_type>
+    template<typename any_container_type>
     inline void get_sub_range_current_native(
                                              grit::engine2d_type  const & engine
                                              , glue::Phase        const & phase
-                                             , any_array_type           & x
-                                             , any_array_type           & y
+                                             , any_container_type       & x
+                                             , any_container_type       & y
                                              )
     {
       typedef grit::default_grit_types::vector3_type V;
@@ -368,7 +198,210 @@ namespace glue
         y[i] = p(1);
       }
     }
-  
+    
+    /**
+     * Gets target coordinates of the vertices in @param phase
+     */
+    template<typename any_container_type>
+    inline void get_sub_range_target_native(
+                                            grit::engine2d_type  const & engine
+                                            , glue::Phase        const & phase
+                                            , any_container_type       & x
+                                            , any_container_type       & y
+                                            )
+    {
+      typedef grit::default_grit_types::vector3_type V;
+
+      if(phase.m_labels.size()!=1u)
+      {
+        util::Log log;
+
+        log << "get_sub_range_target() Invalid argument phase has multiple labels" << util::Log::newline();
+
+        throw std::invalid_argument("trying to get sub range from non-existing vertex attribute");
+      }
+
+      unsigned int const N = phase.m_vertices.size();
+
+      for(unsigned int i = 0; i < N; ++i)
+      {
+        grit::Simplex0 const & s = phase.m_vertices[i];
+
+        V const & p = engine.attributes().get_target_value( s, phase.m_labels[0] );
+
+        x[i] = p(0);
+        y[i] = p(1);
+      }
+    }
+
+    /**
+     * Set sub range.
+     * This function is the symmetric counter part of the
+     * correspoding glue::get_sub_range() function.
+     */
+    template<typename any_container_type>
+    inline void set_sub_range_native(
+                                     grit::engine2d_type        & engine
+                                     , glue::Phase        const & phase
+                                     , std::string        const & name
+                                     , any_container_type const & values
+                                     , VERTEX_ATTRIBUTE   const & /*tag*/
+                                     )
+
+    {
+      if(! engine.attributes().exist_attribute(name, 0u) )
+      {
+        util::Log log;
+
+        log << "set_sub_range():  Vertex attribute " << name << " did not exist" << util::Log::newline();
+
+        throw std::logic_error("trying to set sub range from non-existing vertex attribute");
+      }
+
+      if(phase.m_labels.size()!=1u)
+      {
+        util::Log log;
+
+        log << "set_sub_range() Invalid argument phase has multiple labels" << util::Log::newline();
+
+        throw std::invalid_argument("trying to get sub range from non-existing vertex attribute");
+      }
+
+      if(phase.m_vertices.size() != values.size())
+      {
+        util::Log log;
+
+        log << "set_sub_range():  the number of vertices must be equal to the number of values" << util::Log::newline();
+
+        throw std::invalid_argument("vertices and values must be of same size");
+      }
+
+      unsigned int const N = phase.m_vertices.size();
+
+      for(unsigned int i = 0; i < N; ++i)
+      {
+        grit::Simplex0 const & s = phase.m_vertices[i];
+
+        engine.attributes().set_attribute_value(name, s, phase.m_labels[0], values[i]);
+      }
+    }
+
+    /**
+     * This version sets attribute values for edges (simplex1's).
+     */
+    template<typename any_container_type>
+    inline void set_sub_range_native(
+                                     grit::engine2d_type        & engine
+                                     , glue::Phase        const & phase
+                                     , std::string        const & name
+                                     , any_container_type const & values
+                                     , EDGE_ATTRIBUTE     const & /*tag*/
+                                     )
+    {
+      if(phase.m_edges.size() != values.size())
+      {
+        util::Log log;
+
+        log << "set_sub_range():  the number of edges must be equal to the number of values" << util::Log::newline();
+
+        throw std::invalid_argument("edges and values must be of same size");
+      }
+
+      unsigned int const N = phase.m_edges.size();
+
+      for(unsigned int t = 0u; t < N; ++t)
+      {
+        unsigned int   const & i  = phase.m_edges[t].i;  // Local space indices
+        unsigned int   const & j  = phase.m_edges[t].j;
+
+        grit::Simplex0 const & v0 = phase.m_vertices[i];
+        grit::Simplex0 const & v1 = phase.m_vertices[j];
+
+        grit::Simplex1 const & s = grit::make_simplex1(v0, v1);
+
+        engine.attributes().set_attribute_value(name, s, values[t]);
+      }
+    }
+
+    /**
+     * This version sets attribute values for triangles (simplex2's).
+     */
+    template<typename any_container_type>
+    inline void set_sub_range_native(
+                                     grit::engine2d_type        & engine
+                                     , glue::Phase        const & phase
+                                     , std::string        const & name
+                                     , any_container_type const & values
+                                     , FACE_ATTRIBUTE     const & /*tag*/
+                                     )
+    {
+      if(phase.m_triangles.size() != values.size())
+      {
+        util::Log log;
+
+        log << "set_sub_range():  the number of triangles must be equal to the number of values" << util::Log::newline();
+
+        throw std::invalid_argument("triangles and values must be of same size");
+      }
+
+      unsigned int const N = phase.m_triangles.size();
+
+      for(unsigned int t = 0; t < N; ++t)
+      {
+        unsigned int   const & i  = phase.m_triangles[t].i;  // Local space indices
+        unsigned int   const & j  = phase.m_triangles[t].j;
+        unsigned int   const & k  = phase.m_triangles[t].k;
+
+        grit::Simplex0 const & v0 = phase.m_vertices[i];
+        grit::Simplex0 const & v1 = phase.m_vertices[j];
+        grit::Simplex0 const & v2 = phase.m_vertices[k];
+
+        grit::Simplex2 const & s = grit::make_simplex2(v0, v1, v2);
+
+        engine.attributes().set_attribute_value(name, s, values[t]);
+      }
+    }
+
+    template<typename any_container_type>
+    inline void set_sub_range_current_native(
+                                             grit::engine2d_type        & engine
+                                             , glue::Phase        const & phase
+                                             , any_container_type const & x
+                                             , any_container_type const & y
+                                             )
+    {
+      typedef grit::default_grit_types::vector3_type V;
+
+      if(phase.m_vertices.size() != x.size())
+      {
+        util::Log log;
+
+        log << "set_sub_range_current(): The number of vertices must be equal to the number of x-values" << util::Log::newline();
+
+        throw std::invalid_argument("Vertices and x-values must be of same size");
+      }
+
+      if(phase.m_vertices.size() != y.size())
+      {
+        util::Log log;
+
+        log << "set_sub_range_current(): The number of vertices must be equal to the number of y-values" << util::Log::newline();
+
+        throw std::invalid_argument("Vertices and y-values must be of same size");
+      }
+
+      unsigned int const N = phase.m_vertices.size();
+
+      for(unsigned int i = 0; i < N; ++i)
+      {
+        grit::Simplex0 const & s = phase.m_vertices[i];
+
+        V const p( x[i], y[i], 0.0);
+
+        engine.attributes().set_current_value( s, p);
+      }
+    }
+
     /**
      * Sets target coordinates for sub range.
      *
@@ -376,12 +409,12 @@ namespace glue
      *                                  does not have data for every vertex with
      *                                  same label.
      */
-    template<typename any_array_type>
+    template<typename any_container_type>
     inline void set_sub_range_target_native(
                                             grit::engine2d_type         & engine
                                             , glue::Phase         const & phase
-                                            , any_array_type      const & x
-                                            , any_array_type      const & y
+                                            , any_container_type  const & x
+                                            , any_container_type  const & y
                                             , bool                const & using_partial_data = false
                                             )
     {
@@ -475,9 +508,95 @@ namespace glue
       }
     }
 
-  }// namespace details
+  } // namespace details
   
-  
+  template<typename container_type>
+  inline void get_sub_range(
+                            grit::engine2d_type const & engine
+                            , glue::Phase       const & phase
+                            , std::string       const & name
+                            , container_type          & values
+                            , VERTEX_ATTRIBUTE  const & /*tag*/
+                            )
+  {
+    details::get_sub_range_native( engine, phase, name, values, VERTEX_ATTRIBUTE() );
+  }
+
+  template<>
+  inline void get_sub_range<typename std::vector<double> >(
+                                                           grit::engine2d_type   const & engine
+                                                           , glue::Phase         const & phase
+                                                           , std::string         const & name
+                                                           , std::vector<double>       & values
+                                                           , VERTEX_ATTRIBUTE    const & /*tag*/
+                                                           )
+  {
+    unsigned int const N = phase.m_vertices.size();
+
+    values.clear();
+    values.resize(N,0.0);
+
+    details::get_sub_range_native( engine, phase, name, values, VERTEX_ATTRIBUTE() );
+  }
+
+  template<typename container_type>
+  inline void get_sub_range(
+                            grit::engine2d_type const & engine
+                            , glue::Phase       const & phase
+                            , std::string       const & name
+                            , container_type          & values
+                            , EDGE_ATTRIBUTE    const & /*tag*/
+                            )
+  {
+    details::get_sub_range_native( engine, phase, name, values, EDGE_ATTRIBUTE() );
+  }
+
+  template<>
+  inline void get_sub_range<typename std::vector<double> >(
+                                                           grit::engine2d_type   const & engine
+                                                           , glue::Phase         const & phase
+                                                           , std::string         const & name
+                                                           , std::vector<double>       & values
+                                                           , EDGE_ATTRIBUTE      const & /*tag*/
+                                                           )
+  {
+    unsigned int const N = phase.m_edges.size();
+
+    values.clear();
+    values.resize(N,0.0);
+
+    details::get_sub_range_native( engine, phase, name, values, EDGE_ATTRIBUTE() );
+  }
+
+  template<typename container_type>
+  inline void get_sub_range(
+                            grit::engine2d_type const & engine
+                            , glue::Phase       const & phase
+                            , std::string       const & name
+                            , container_type          & values
+                            , FACE_ATTRIBUTE    const & /*tag*/
+                            )
+  {
+    details::get_sub_range_native( engine, phase, name, values, FACE_ATTRIBUTE() );
+  }
+
+  template<>
+  inline void get_sub_range<typename std::vector<double> >(
+                                                           grit::engine2d_type   const & engine
+                                                           , glue::Phase         const & phase
+                                                           , std::string         const & name
+                                                           , std::vector<double>       & values
+                                                           , FACE_ATTRIBUTE      const & /*tag*/
+                                                           )
+  {
+    unsigned int const N = phase.m_triangles.size();
+
+    values.clear();
+    values.resize(N,0.0);
+
+    details::get_sub_range_native( engine, phase, name, values, glue::FACE_ATTRIBUTE() );
+  }
+
   template<typename container_type>
   inline void get_sub_range_current(
                                     grit::engine2d_type const & engine
@@ -509,6 +628,83 @@ namespace glue
   }
 
   template<typename container_type>
+  inline void get_sub_range_target(
+                                   grit::engine2d_type const & engine
+                                   , glue::Phase       const & phase
+                                   , container_type          & x
+                                   , container_type          & y
+                                   )
+  {
+    details::get_sub_range_target_native( engine, phase, x, y );
+  }
+
+  template<>
+  inline void get_sub_range_target<std::vector<double> >(
+                                                         grit::engine2d_type   const & engine
+                                                         , glue::Phase         const & phase
+                                                         , std::vector<double>       & x
+                                                         , std::vector<double>       & y
+                                                         )
+  {
+    unsigned int const N = phase.m_vertices.size();
+
+    x.clear();
+    x.resize(N,0.0);
+
+    y.clear();
+    y.resize(N,0.0);
+
+    details::get_sub_range_target_native( engine, phase, x, y );
+  }
+
+  template<typename container_type>
+  inline void set_sub_range(
+                            grit::engine2d_type       & engine
+                            , glue::Phase       const & phase
+                            , std::string       const & name
+                            , container_type    const & values
+                            , VERTEX_ATTRIBUTE  const & /*tag*/
+                            )
+  {
+    details::set_sub_range_native( engine, phase, name, values, VERTEX_ATTRIBUTE() );
+  }
+
+  template<typename container_type>
+  inline void set_sub_range(
+                            grit::engine2d_type       & engine
+                            , glue::Phase       const & phase
+                            , std::string       const & name
+                            , container_type    const & values
+                            , EDGE_ATTRIBUTE    const & /*tag*/
+                            )
+  {
+    details::set_sub_range_native( engine, phase, name, values, EDGE_ATTRIBUTE() );
+  }
+  
+  template<typename container_type>
+  inline void set_sub_range(
+                            grit::engine2d_type       & engine
+                            , glue::Phase       const & phase
+                            , std::string       const & name
+                            , container_type    const & values
+                            , FACE_ATTRIBUTE    const & /*tag*/
+                            )
+  {
+    details::set_sub_range_native( engine, phase, name, values, FACE_ATTRIBUTE() );
+  }
+
+  template<typename container_type>
+  inline void set_sub_range_current(
+                                    grit::engine2d_type         & engine
+                                    , glue::Phase         const & phase
+                                    , container_type      const & x
+                                    , container_type      const & y
+                                    )
+  {
+    details::set_sub_range_current_native( engine, phase, x, y );
+  }
+
+  template<typename container_type>
   inline void set_sub_range_target(
                                    grit::engine2d_type         & engine
                                    , glue::Phase         const & phase
@@ -520,46 +716,7 @@ namespace glue
     details::set_sub_range_target_native( engine, phase, x, y, using_partial_data );
   }  
 
-  inline void set_sub_range_current(
-                                    grit::engine2d_type                & engine
-                                    , glue::Phase                const & phase
-                                    , std::vector<double>        const & x
-                                    , std::vector<double>        const & y
-                                    )
-  {
-    typedef grit::default_grit_types::vector3_type V;
-
-    if(phase.m_vertices.size() != x.size())
-    {
-      util::Log log;
-
-      log << "set_sub_range_current(): The number of vertices must be equal to the number of x-values" << util::Log::newline();
-
-      throw std::invalid_argument("Vertices and x-values must be of same size");
-    }
-
-    if(phase.m_vertices.size() != y.size())
-    {
-      util::Log log;
-
-      log << "set_sub_range_current(): The number of vertices must be equal to the number of y-values" << util::Log::newline();
-
-      throw std::invalid_argument("Vertices and y-values must be of same size");
-    }
-
-    unsigned int const N = phase.m_vertices.size();
-
-    for(unsigned int i = 0; i < N; ++i)
-    {
-      grit::Simplex0 const & s = phase.m_vertices[i];
-
-      V const p( x[i], y[i], 0.0);
-
-      engine.attributes().set_current_value( s, p);
-    }
-  }
-
-}// end namespace glue
+} // end namespace glue
 
 // GLUE_SUB_RANGE_H
 #endif
