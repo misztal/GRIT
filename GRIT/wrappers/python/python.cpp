@@ -23,7 +23,6 @@ namespace pygrit
   void get_sub_range_current(
                              grit::engine2d_type     const & engine
                              , glue::Phase           const & phase
-                             //, unsigned int          const & array_size
                              , py_dense_array_double       & x
                              , py_dense_array_double       & y
                              )
@@ -48,26 +47,11 @@ namespace pygrit
   void set_sub_range_target(
                             grit::engine2d_type           & engine
                             , glue::Phase           const & phase
-                            //, unsigned int          const & array_size
                             , py_dense_array_double const & x
                             , py_dense_array_double const & y
                             , bool                  const & using_partial_data = false
                             )
   {
-    if( phase.m_vertices.size() != x.size() )
-    {
-      util::Log log;
-      log << "set_sub_range_target(): The number of vertices must be equal to the size of x array" << util::Log::newline();
-      throw std::invalid_argument("Vertices and x-values must be of same size");
-    }
-
-    if( phase.m_vertices.size() != y.size() )
-    {
-      util::Log log;
-      log << "set_sub_range_target(): The number of vertices must be equal to the size of y array" << util::Log::newline();
-      throw std::invalid_argument("Vertices and y-values must be of same size");
-    }
-
     glue::set_sub_range_target( engine, phase, x, y, using_partial_data );
   }
 } // namespace pygrit
@@ -231,6 +215,9 @@ PYBIND11_MODULE( pygrit, m )
 
        }, py::keep_alive<0, 1>());
 
+  py::class_<glue::VERTEX_ATTRIBUTE>(m, "VERTEX_ATTRIBUTE");
+  py::class_<glue::EDGE_ATTRIBUTE>(m, "EDGE_ATTRIBUTE");
+  py::class_<glue::FACE_ATTRIBUTE>(m, "FACE_ATTRIBUTE");
 
   //--- Binding functions from util, grit and glue
   m.def("get_data_file_path"              , &util::get_data_file_path                                   );
@@ -251,9 +238,8 @@ PYBIND11_MODULE( pygrit, m )
   m.def("set_sub_range_target"            , &pygrit::set_sub_range_target  
                                           , py::arg("engine")
                                           , py::arg("phase")
-                                          , py::arg("array_size")
                                           , py::arg("x")
-                                          //, py::arg("y")
+                                          , py::arg("y")
                                           , py::arg("using_partial_data") = false                       );
 
 

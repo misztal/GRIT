@@ -4,7 +4,6 @@
 #include <glue_phase.h>
 #include <glue_make_phase.h>
 
-//#include <grit.h>
 #include <grit_engine_2d.h>
 
 #include <util_log.h>
@@ -47,54 +46,6 @@ namespace glue
         grit::Simplex2 const s = *it;
         labels.push_back( engine.mesh().label(s) );
       }
-    }
-  }
-
-  /**
-   * Get sub range of values from mesh engine.
-   * Given a set of vertcies from a phase extract their attribute values into a array.
-   *
-   * @param engine    The mesh engine instance holding all data.
-   * @param phase     A glue::Phase object with vertex information
-   * @param name      The string value containing the attribute name.
-   * @param values    Upon return this argument holds the values of the range of vertices.
-   */
-  inline void get_sub_range(
-                            grit::engine2d_type            const & engine
-                            , glue::Phase                  const & phase
-                            , std::string                  const & name
-                            , std::vector<double>                & values
-                            , VERTEX_ATTRIBUTE             const & /*tag*/
-                            )
-  {
-    if(phase.m_labels.size()!=1u)
-    {
-      util::Log log;
-
-      log << "get_sub_range() Invalid argument phase has multiple labels" << util::Log::newline();
-
-      throw std::invalid_argument("trying to get sub range from non-existing vertex attribute");
-    }
-
-    if(! engine.attributes().exist_attribute(name, 0u) )
-    {
-      util::Log log;
-
-      log << "get_sub_range() Vertex attribute " << name << " did not exist" << util::Log::newline();
-
-      throw std::logic_error("trying to get sub range from non-existing vertex attribute");
-    }
-
-    unsigned int const N = phase.m_vertices.size();
-
-    values.clear();
-    values.resize(N,0.0);
-
-    for(unsigned int i = 0; i < N; ++i)
-    {
-      grit::Simplex0 const & s = phase.m_vertices[i];
-
-      values[i] = engine.attributes().get_attribute_value(name, s, phase.m_labels[0] );
     }
   }
 
@@ -343,9 +294,55 @@ namespace glue
 
   }
 
+  /**
+     * Get sub range of values from mesh engine.
+     * Given a set of vertcies from a phase extract their attribute values into a array.
+     *
+     * @param engine    The mesh engine instance holding all data.
+     * @param phase     A glue::Phase object with vertex information
+     * @param name      The string value containing the attribute name.
+     * @param values    Upon return this argument holds the values of the range of vertices.
+     */
+    inline void get_sub_range(
+                              grit::engine2d_type            const & engine
+                              , glue::Phase                  const & phase
+                              , std::string                  const & name
+                              , std::vector<double>                & values
+                              , VERTEX_ATTRIBUTE             const & /*tag*/
+                              )
+    {
+      if(phase.m_labels.size()!=1u)
+      {
+        util::Log log;
+        log << "get_sub_range() Invalid argument phase has multiple labels" << util::Log::newline();
+        throw std::invalid_argument("trying to get sub range from non-existing vertex attribute");
+      }
+
+      if(! engine.attributes().exist_attribute(name, 0u) )
+      {
+        util::Log log;
+        log << "get_sub_range() Vertex attribute " << name << " did not exist" << util::Log::newline();
+        throw std::logic_error("trying to get sub range from non-existing vertex attribute");
+      }
+
+      unsigned int const N = phase.m_vertices.size();
+
+      values.clear();
+      values.resize(N,0.0);
+
+      for(unsigned int i = 0; i < N; ++i)
+      {
+        grit::Simplex0 const & s = phase.m_vertices[i];
+
+        values[i] = engine.attributes().get_attribute_value(name, s, phase.m_labels[0] );
+      }
+    }
+
   
   namespace details
   {
+    
+
     /**
      * Gets current coordinates of the vertices in @param phase.
      */
@@ -389,6 +386,24 @@ namespace glue
                                             )
     {
       typedef grit::default_grit_types::vector3_type V;
+
+      if(phase.m_vertices.size() != x.size())
+      {
+        util::Log log;
+      
+        log << "set_sub_range_target(): The number of vertices must be equal to the number of x-values" << util::Log::newline();
+       
+        throw std::invalid_argument("Vertices and x-values must be of same size");
+      }
+
+      if(phase.m_vertices.size() != y.size())
+      {
+        util::Log log;
+        
+        log << "set_sub_range_target(): The number of vertices must be equal to the number of y-values" << util::Log::newline();
+        
+        throw std::invalid_argument("Vertices and y-values must be of same size");
+      }
 
       if(phase.m_labels.size()!=1u)
       {
@@ -503,38 +518,7 @@ namespace glue
                                    )
   {
     details::set_sub_range_target_native( engine, phase, x, y, using_partial_data );
-  }
-  
-  template<>
-  inline void set_sub_range_target<std::vector<double> >(
-                                                         grit::engine2d_type         & engine
-                                                         , glue::Phase         const & phase
-                                                         , std::vector<double> const & x
-                                                         , std::vector<double> const & y
-                                                         , bool                const & using_partial_data
-                                                         )
-  {
-    if(phase.m_vertices.size() != x.size())
-    {
-      util::Log log;
-
-      log << "set_sub_range_target(): The number of vertices must be equal to the number of x-values" << util::Log::newline();
-
-      throw std::invalid_argument("Vertices and x-values must be of same size");
-    }
-
-    if(phase.m_vertices.size() != y.size())
-    {
-      util::Log log;
-
-      log << "set_sub_range_target(): The number of vertices must be equal to the number of y-values" << util::Log::newline();
-
-      throw std::invalid_argument("Vertices and y-values must be of same size");
-    }
-
-    details::set_sub_range_target_native(engine, phase, x, y, using_partial_data);
-  }
-  
+  }  
 
   inline void set_sub_range_current(
                                     grit::engine2d_type                & engine
