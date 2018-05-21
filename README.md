@@ -44,3 +44,31 @@ First you must run CMake on GRIT to create the .sln file, then open it in Visual
 After you have build the pygrit target in GRIT then your build/wrappers/python/Release (or Debug) folder should contain a file named pygrit.cp37-win32.pyg or similar. Copy this file to your Python site-packages directory (e.g. C:\Python37-32\Lib\site-packages). 
  
 You can then execute the tutorial_vortex_in_a_box.py script by double-clicking on it.
+
+**Note to developers**
+
+In order to enable the GLUE sub-range functionality, the pybind11 library had to be modified by overloading `operator[]` inside `array_t` class, see lines 807-819 in GRIT/wrappers/python/pybind11/include/pybind11/numpy.h:
+```
+template <typename T, ...> class array_t : public array {
+...
+public:
+
+    T const & operator[](unsigned int const & index) const
+    {
+      T const * ptr = (T const *) this->data();
+      return ptr[index];
+    }
+
+    T & operator[](unsigned int const & index)
+    {
+      T * ptr = (T *) this->data();
+      return ptr[index];
+    }
+...
+};
+```
+In case of future updates of the pybind11 library, the numpy.h will have to be updated accordingly.
+
+**Numpy arrays**
+
+The functions which operate on numpy.array objects rely on an assumption that all arrays have been pre-allocated to the correct size. Current pygrit interface offers little in terms of input numpy.array validity checks, and might produce Segmentation Fault type of errors if the arrays are not pre-allocated correctly.
