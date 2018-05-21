@@ -71,4 +71,4 @@ In case of future updates of the pybind11 library, the numpy.h will have to be u
 
 **Numpy arrays**
 
-The functions which operate on numpy.array objects rely on an assumption that all arrays have been pre-allocated to the correct size. Current pygrit interface offers little in terms of input numpy.array validity checks, and might produce Segmentation Fault type of errors if the arrays are not pre-allocated correctly.
+The functions which operate on numpy.array objects rely on an assumption that all arrays have been pre-allocated to the correct size. 
