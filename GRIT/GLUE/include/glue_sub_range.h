@@ -467,10 +467,13 @@ namespace glue
 
         glue::Phase entire_phase = glue::make_phase( engine, phase_label);
 
+        unsigned int const N = entire_phase.m_vertices.size();
+        
         // Default target value is current
-        std::vector<double> target_x;
-        std::vector<double> target_y;
-        glue::get_sub_range_current( engine, entire_phase, target_x, target_y);
+        std::vector<double> target_x( N, 0.);
+        std::vector<double> target_y( N, 0.);
+
+        get_sub_range_current_native( engine, entire_phase, target_x, target_y );
 
         // Setting target values to the ones speified by x and y from function input
         unsigned int const M = phase.m_vertices.size();
@@ -484,7 +487,6 @@ namespace glue
         }
 
         // Update target values in engine
-        unsigned int const N = entire_phase.m_vertices.size();
         for(unsigned int i = 0; i < N; ++i)
         {
           grit::Simplex0 const & s = entire_phase.m_vertices[i];
