@@ -203,6 +203,7 @@ namespace glue
                                 )
   {
     unsigned int const T          = edges.size();
+
     unsigned int const N          = T*2u;
 
     info.m_V2T.resize( N );

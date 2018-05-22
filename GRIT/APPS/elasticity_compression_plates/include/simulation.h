@@ -18,7 +18,7 @@
  */
 inline void resolve_collisions(
                                std::vector<glue::ContactPoint> & contacts
-                               , std::vector<elasticity::Object> objects
+                               , std::vector<elasticity::Object> & objects
                                , int const & free_object
                                , bool const & sliding
                                )
@@ -235,7 +235,7 @@ inline void do_simulation_step(
   double const plate_distance = (max_obj_y0 - min_obj_y0)*0.75;
   double const lower_y_stop   = y_mid - plate_distance*0.5;
   double const upper_y_stop   = y_mid + plate_distance*0.5;
-  double const plate_speed = 0.01;
+  double const plate_speed = 0.001;
 
   if (max_lower_y < lower_y_stop)
   {

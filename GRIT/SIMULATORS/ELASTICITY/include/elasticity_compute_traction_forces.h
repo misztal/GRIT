@@ -15,7 +15,7 @@ namespace elasticity
 {
 
   inline void compute_traction_forces(
-                                      glue::Neighbors           const & neighbors
+                                      glue::Neighbors       const & neighbors
                                       , Traction            const & traction
                                       , std::vector<double> const & px        // current x-component of nodal positions
                                       , std::vector<double> const & py        // current y-component of nodal positions
