@@ -108,7 +108,7 @@ namespace glue
       if (this->m_vertex_B < cp.m_vertex_B)
         return true;
 
-      return true;
+      return false;
     }
 
   };

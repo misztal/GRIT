@@ -14,7 +14,7 @@ inline void fixed_step_loop(
                             )
 {
   unsigned int const frames        = util::to_value<unsigned int>( settings.get_value("frames",      "10"   )  );
-  unsigned int const skip_frames   = util::to_value<unsigned int>( settings.get_value("skip_frames", "1!"   )  );
+  unsigned int const skip_frames   = util::to_value<unsigned int>( settings.get_value("skip_frames", "1"    )  );
   bool        const  profiling     = util::to_value<bool>(         settings.get_value("profiling",   "false")  );
 
   elasticity::Parameters const controls = elasticity::make_parameters_from_config_file(settings);
