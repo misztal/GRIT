@@ -1,6 +1,71 @@
 # GRIT
 
-[![VIDEO](https://img.youtube.com/vi/gmyX38hCkho/0.jpg)](https://www.youtube.com/watch?v=gmyX38hCkho)
+Area Maximization
+
+[![VIDEO](https://img.youtube.com/vi/-PeN2YkvBz4/0.jpg)](https://www.youtube.com/watch?v=-PeN2YkvBz4)
+
+Sliding Contact
+
+[![VIDEO](https://img.youtube.com/vi/aiU6QEdkwSw/0.jpg)](https://www.youtube.com/watch?v=aiU6QEdkwSw)
+
+Beam Material Space
+
+[![VIDEO](https://img.youtube.com/vi/xSkG1H7c0WM/0.jpg)](https://www.youtube.com/watch?v=xSkG1H7c0WM)
+
+Beam Spatial Space
+
+[![VIDEO](https://img.youtube.com/vi/NMS0pkYMyxM/0.jpg)](https://www.youtube.com/watch?v=NMS0pkYMyxM)
+
+Compression Material Space
+
+[![VIDEO](https://img.youtube.com/vi/mTA-XLvBhs8/0.jpg)](https://www.youtube.com/watch?v=mTA-XLvBhs8)
+
+Compression  Spatial Space
+
+[![VIDEO](https://img.youtube.com/vi/IKSRQpPx3p0/0.jpg)](https://www.youtube.com/watch?v=IKSRQpPx3p0)
+
+Squeeze Material Space
+
+[![VIDEO](https://img.youtube.com/vi/a5DFJZB7bA0/0.jpg)](https://www.youtube.com/watch?v=a5DFJZB7bA0)
+
+Squeeze Spatial Space
+
+[![VIDEO](https://img.youtube.com/vi/QrZEPO6g1Xk/0.jpg)](https://www.youtube.com/watch?v=QrZEPO6g1Xk)
+
+Stretch Material Space
+
+[![VIDEO](https://img.youtube.com/vi/H_ZDGscTEwU/0.jpg)](https://www.youtube.com/watch?v=H_ZDGscTEwU)
+
+Streatch Spatial Space
+
+[![VIDEO](https://img.youtube.com/vi/vXNtuxYEdes/0.jpg)](https://www.youtube.com/watch?v=vXNtuxYEdes)
+
+Erosion Space
+
+[![VIDEO](https://img.youtube.com/vi/smA-GyVKdwY/0.jpg)](https://www.youtube.com/watch?v=smA-GyVKdwY)
+
+Liquid Space
+
+[![VIDEO](https://img.youtube.com/vi/VEg_2Pak7WU/0.jpg)](https://www.youtube.com/watch?v=VEg_2Pak7WU)
+
+Stefan Problem
+
+[![VIDEO](https://img.youtube.com/vi/uGHfS19SZSc/0.jpg)](https://www.youtube.com/watch?v=uGHfS19SZSc)
+
+[![VIDEO](https://img.youtube.com/vi/mHiiumjjxbQ/0.jpg)](https://www.youtube.com/watch?v=mHiiumjjxbQ)
+
+Smolarkiewicz
+
+[![VIDEO](https://img.youtube.com/vi/TrT6LsgwygY/0.jpg)](https://www.youtube.com/watch?v=TrT6LsgwygY)
+
+Vortex in Box
+
+[![VIDEO](https://img.youtube.com/vi/UsTTK6jSZcs/0.jpg)](https://www.youtube.com/watch?v=UsTTK6jSZcs)
+
+Zalesak Disk
+
+[![VIDEO](https://img.youtube.com/vi/52NVEzAUX6o/0.jpg)](https://www.youtube.com/watch?v=52NVEzAUX6o)
+
 
 ## General Robust Interface Tracking meshes in 2D
 
