@@ -8,4 +8,5 @@ ADD_SUBDIRECTORY(elasticity_compression)
 ADD_SUBDIRECTORY(elasticity_stretch)
 ADD_SUBDIRECTORY(elasticity_cantilever_beam)
 ADD_SUBDIRECTORY(elasticity_compression_plates)
+ADD_SUBDIRECTORY(stefan)
 
