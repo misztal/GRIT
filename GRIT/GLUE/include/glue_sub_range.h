@@ -20,14 +20,13 @@ namespace glue
   struct EDGE_ATTRIBUTE {};
   struct FACE_ATTRIBUTE {};
 
-  // 2018-05-21 Marek: this function isn't used anywhere in the main branch
-  //                   and is it uses push_back, it's not very numpy friendly.
+  // 2018-12-11 Marek: this function uses push_back, it's not very numpy friendly.
   /**
    * When one work on the whole mesh it can be usefull to be
    * able to lookup the labels of the triangles. This convenience
    * function extracts this label data.
    */
-  /*inline void get_labels(
+  inline void get_labels(
                          grit::engine2d_type const & engine
                          , std::vector<unsigned int> & labels
                          )
@@ -49,7 +48,7 @@ namespace glue
         labels.push_back( engine.mesh().label(s) );
       }
     }
-  }*/
+  }
   
   namespace details
   {
